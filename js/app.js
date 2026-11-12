@@ -8,6 +8,20 @@ import * as Net from './net.js';
 import { sfx, isMuted, setMuted } from './sfx.js';
 
 const app = document.getElementById('app');
+
+// iOS home-screen apps report a short CSS viewport (100vh / 100dvh); use the real window height.
+const setAppHeight = () => {
+  let h = window.innerHeight;
+  // Installed on iPhone: the app is full screen, but the reported height leaves out the status bar.
+  if (navigator.standalone) {
+    const portrait = window.matchMedia('(orientation: portrait)').matches;
+    h = Math.max(h, portrait ? screen.height : screen.width);
+  }
+  document.documentElement.style.setProperty('--app-h', `${h}px`);
+};
+setAppHeight();
+window.addEventListener('resize', setAppHeight);
+window.addEventListener('orientationchange', () => setTimeout(setAppHeight, 300));
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 let view = null; // active GameView
 let unsub = []; // firestore listeners

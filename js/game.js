@@ -1,7 +1,7 @@
 // The in-game screen: board, HUD, hand (drag or tap to deploy), effect prompts.
 import * as E from './engine.js';
 import { MAPS, SPECIALS } from './maps.js';
-import { renderStatic, renderDynamic, contentBox } from './board.js';
+import { renderStatic, renderDynamic, contentBox, W as IMG_W, H as IMG_H } from './board.js';
 import { TROOPS, TEAM, cardHTML, cardBackHTML, troopArt } from './troops.js';
 import { sfx } from './sfx.js';
 
@@ -201,7 +201,11 @@ export class GameView {
     const ca = cw / ch;
     if (w / h > ca) h = w / ca; else w = h * ca;
     const cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2;
-    const vb = `${(cx - w / 2).toFixed(1)} ${(cy - h / 2).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`;
+    let x = cx - w / 2, y = cy - h / 2;
+    // keep the view inside the rendered image when it fits, so its edges never show
+    if (w <= IMG_W) x = Math.min(Math.max(x, 0), IMG_W - w);
+    if (h <= IMG_H) y = Math.min(Math.max(y, 0), IMG_H - h);
+    const vb = `${x.toFixed(1)} ${y.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`;
     holder.querySelectorAll('svg.board').forEach((el) => el.setAttribute('viewBox', vb));
   }
 

@@ -6,7 +6,8 @@ import { topOf, ownerOf, typeOf } from './engine.js';
 import { C, P } from './paint.js';
 import { LAYOUT } from './layout.js';
 
-export const W = 1000, H = 1600;
+// Image space of the rendered boards (square; see tools/render).
+export const W = 1600, H = 1600;
 const BASE = 128, HQ = 176;
 
 export const SPECIAL_ICON = {
@@ -64,7 +65,7 @@ const lay = (m, flip) => LAYOUT[m.id][flip ? 'b' : 'r'];
 export function renderStatic(m, { flip = false, lite = false } = {}) {
   const L = lay(m, flip);
   const src = lite ? `assets/boards/${m.id}-thumb.jpg` : `assets/boards/${m.id}-${flip ? 'b' : 'r'}.jpg`;
-  let out = `<svg class="board board-static theme-${m.theme}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg"><defs>${BOARD_DEFS}</defs>`;
+  let out = `<svg class="board board-static theme-${m.theme}" viewBox="0 0 ${W} ${H}" ${lite ? 'preserveAspectRatio="xMidYMid slice"' : ''} xmlns="http://www.w3.org/2000/svg"><defs>${BOARD_DEFS}</defs>`;
   out += `<image href="${src}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="none"/>`;
   if (!lite) {
     for (const id in m.nodes) {

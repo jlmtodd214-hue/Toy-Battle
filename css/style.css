@@ -422,3 +422,7 @@ body { background: #141a33; }
   .game .prompt .bar .btn { font-size: 14px; padding: 4px 10px; }
   .game .hud-top .plate-avatar { width: 32px; height: 32px; }
 }
+
+/* real window height (set from JS) — fixes the short viewport of iOS home-screen apps */
+html { background: #141a33; }
+html, body, #app, .screen, .game { height: var(--app-h, 100dvh); }

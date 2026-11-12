@@ -6,6 +6,8 @@ import { MAP_LIST, MAPS } from '../../js/maps.js';
 
 export const MAP_IDS = MAP_LIST.map((m) => m.id);
 const BW = 1000, BH = 1600, BASE = 128;
+// Rendered image space: square, so wide phone screens still show real terrain at the sides.
+export const IW = 1600, IH = 1600;
 
 // ------------------------------------------------------------ texture painters
 function speckle(g, w, h, r, n, cols, smin = 1, smax = 3) {
@@ -337,6 +339,27 @@ const PROPS = {
 };
 const beachTex = canvasTex(256, 128, (g, w, h) => { ['#e5484d', '#ffffff', '#3b7dd8', '#ffffff', '#ffd34d', '#ffffff'].forEach((c, i) => { g.fillStyle = c; g.fillRect(i * w / 6, 0, w / 6 + 1, h); }); });
 
+// Decorations on the "table" around the board, seen at the sides on wide screens.
+function surroundProps(theme, r) {
+  const out = [];
+  const place = (o) => { o.position.x += (r() < 0.5 ? -1 : 1) * (560 + r() * 520); o.position.z += (r() - 0.5) * 2200; out.push(o); return o; };
+  const greens = { fort: ['#2f6f2a', '#3e8a35', '#4f9e3f', '#367d2e'], lava: ['#1f5a2a', '#2c7a36', '#3c8d40'] };
+  const n = 46;
+  for (let i = 0; i < n; i++) {
+    switch (theme) {
+      case 'fort': place(r() < 0.75 ? bush(r, 1 + r() * 1.2, greens.fort) : rock(r, 1.2 + r())); break;
+      case 'lava': place(r() < 0.6 ? bush(r, 1 + r(), greens.lava) : rock(r, 1.4 + r(), '#4a3a30')); break;
+      case 'clouds': place(group(...[...Array(6)].map(() => mesh(G.sphere(26 + r() * 22), plastic('#ffffff', { rough: 0.8, clearcoat: 0 }), (r() - 0.5) * 90, 10 + r() * 24, (r() - 0.5) * 60)))); break;
+      case 'attic': place(r() < 0.5 ? mesh(G.box(40, 40, 40, 6), plastic(['#e5484d', '#3b7dd8', '#ffd34d', '#69db7c'][Math.floor(r() * 4)], { rough: 0.5 }), 0, 20, 0, { ry: r() * 2 }) : mesh(G.sphere(10), plastic(['#e5484d', '#3b7dd8', '#ffd34d', '#69db7c'][Math.floor(r() * 4)], { rough: 0.05, clearcoat: 1, opacity: 0.85 }), 0, 10, 0)); break;
+      case 'bay': place(mesh(G.sphere(8 + r() * 16), plastic('#ffffff', { opacity: 0.45, rough: 0.05, clearcoat: 1 }), 0, 8, 0, { cast: false })); break;
+      case 'trenches': place(r() < 0.4 ? mesh(G.star(26, 11, 6, 3), plastic('#f08a5d', { rough: 0.6, clearcoat: 0 }), 0, 2, 0, { rx: -Math.PI / 2, rz: r() * 6 }) : r() < 0.6 ? mesh(G.hemi(16), plastic('#f3a5c0', { rough: 0.4 }), 0, 0, 0, { s: [1, 0.5, 1.2] }) : rock(r, 0.7, '#b5a184')); break;
+      case 'pool': if (i < 10) place(mesh(G.box(70, 6, 120, 4), plastic(['#e5484d', '#3b7dd8', '#ffd34d'][i % 3], { rough: 0.6, clearcoat: 0 }), 0, 3, 0, { ry: r() })); break;
+      case 'rocket': if (i < 20) place(mesh(G.box(60, 44, 60, 5), metal('#59607e', 0.5), 0, 22, 0, { ry: r() * 0.6 })); break;
+    }
+  }
+  return out;
+}
+
 // ------------------------------------------------------------ assemble + render
 export function buildBoard(mapId, flip) {
   const m = MAPS[mapId];
@@ -371,6 +394,7 @@ export function buildBoard(mapId, flip) {
     scene.add(obj);
   }
   for (const o of PROPS[m.theme](r, m, P) || []) scene.add(o);
+  for (const o of surroundProps(m.theme, r)) scene.add(o);
   scene.traverse((o) => {
     if (!o.isMesh || o === ground) return;
     const mt = o.material;
@@ -416,8 +440,8 @@ function fitCamera(m, flip, aspect) {
 // Screen positions (in the 1000 x 1600 board image space) of every node and medal slot.
 export function boardLayout(mapId, flip) {
   const m = MAPS[mapId];
-  const { cam, P } = fitCamera(m, flip, BW / BH);
-  const px = (v) => { const q = v.clone().project(cam); return [(q.x + 1) / 2 * BW, (1 - q.y) / 2 * BH]; };
+  const { cam, P } = fitCamera(m, flip, IW / IH);
+  const px = (v) => { const q = v.clone().project(cam); return [(q.x + 1) / 2 * IW, (1 - q.y) / 2 * IH]; };
   const r3 = (n) => Math.round(n * 100) / 100;
   const nodes = {};
   for (const id in m.nodes) {
@@ -439,13 +463,13 @@ export function boardLayout(mapId, flip) {
 }
 
 export function renderBoardImage(mapId, flip, width = 1200, quality = 0.86) {
-  const h = Math.round(width * 1.6);
+  const h = Math.round(width * IH / IW);
   renderer.setPixelRatio(1);
   renderer.setSize(width, h);
   renderer.setClearColor(0x000000, 1);
   renderer.toneMappingExposure = 0.82;
   const scene = buildBoard(mapId, flip);
-  const { cam } = fitCamera(MAPS[mapId], flip, BW / BH);
+  const { cam } = fitCamera(MAPS[mapId], flip, IW / IH);
   scene.fog = null;
   renderer.render(scene, cam);
   renderer.toneMappingExposure = 1.05;
