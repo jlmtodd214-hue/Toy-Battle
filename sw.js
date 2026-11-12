@@ -1,5 +1,5 @@
 // Offline cache for the app shell. Bump VERSION when you deploy changes.
-const VERSION = 'tt-v7';
+const VERSION = 'tt-v8';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/app.js', 'js/engine.js', 'js/maps.js', 'js/board.js', 'js/troops.js', 'js/game.js',
