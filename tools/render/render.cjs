@@ -1,0 +1,33 @@
+// Usage: node render.cjs [toys|boards|all]   (expects a static server on :8765 serving the repo root)
+const { chromium } = require('playwright');
+const fs = require('fs');
+const path = require('path');
+const OUT = path.resolve(__dirname, '../../assets');
+const what = process.argv[2] || 'all';
+(async () => {
+  const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  const p = await b.newPage();
+  p.on('console', (m) => console.log('[page]', m.text()));
+  p.on('pageerror', (e) => console.log('[pageerror]', e.message));
+  await p.goto('http://localhost:8765/tools/render/index.html');
+  await p.waitForFunction(() => window.ready, null, { timeout: 60000 });
+  const save = (file, dataUrl) => {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, Buffer.from(dataUrl.split(',')[1], 'base64'));
+    console.log('wrote', path.relative(OUT, file), Math.round(fs.statSync(file).size / 1024) + 'KB');
+  };
+  if (what === 'toys' || what === 'all') {
+    for (const color of ['red', 'blue']) for (let t = 0; t < 8; t++) {
+      save(`${OUT}/troops/${t}-${color}.png`, await p.evaluate(([t, c]) => window.stage.renderToy(t, c, 384), [t, color]));
+    }
+    save(`${OUT}/medal.png`, await p.evaluate(() => window.stage.renderCoin(96)));
+  }
+  if (what === 'boards' || what === 'all') {
+    const ids = await p.evaluate(() => window.boards.MAP_IDS);
+    for (const id of ids) for (const flip of [false, true]) {
+      save(`${OUT}/boards/${id}-${flip ? 'b' : 'r'}.jpg`, await p.evaluate(([id, f]) => window.boards.renderBoardImage(id, f, 1200), [id, flip]));
+      if (!flip) save(`${OUT}/boards/${id}-thumb.jpg`, await p.evaluate(([id]) => window.boards.renderBoardImage(id, false, 300, 0.8), [id]));
+    }
+  }
+  await b.close();
+})();

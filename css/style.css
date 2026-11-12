@@ -278,3 +278,11 @@ svg .bob.t3, .troop-art.t3.idle { animation: stomp 2.2s ease-in-out infinite; }
 .panel .btn.ghosty, .sheet .btn.ghosty { background: #0000000d; color: var(--ink); border-color: #0005; box-shadow: 0 3px 0 #0004; }
 .bar .btn.ghosty { background: #0000000d; color: var(--ink); border-color: #0005; box-shadow: 0 3px 0 #0004; }
 .bar.hint .btn.ghosty, .bar.recap .btn.ghosty { color: #fff; border-color: #fff6; }
+
+/* Rendered 3D toys */
+img.troop-art { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; -webkit-user-drag: none; }
+.card-art img.troop-art { filter: drop-shadow(0 2px 2px #0005); }
+.card-art { transform: scale(1.14); transform-origin: 50% 75%; }
+.card-art img.troop-art.idle { animation: bob 2.4s ease-in-out infinite; }
+.card-art img.t0.idle { animation: boing 1.6s ease-in-out infinite; }
+.card-art img.t7.idle, .card-art img.t5.idle { animation: stomp 1.8s ease-in-out infinite; }
