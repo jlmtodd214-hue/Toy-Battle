@@ -1,9 +1,9 @@
 // Offline cache for the app shell. Bump VERSION when you deploy changes.
-const VERSION = 'tt-v5';
+const VERSION = 'tt-v6';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/app.js', 'js/engine.js', 'js/maps.js', 'js/board.js', 'js/troops.js', 'js/game.js',
-  'js/bot.js', 'js/net.js', 'js/config.js', 'js/sfx.js', 'js/paint.js',
+  'js/bot.js', 'js/net.js', 'js/config.js', 'js/sfx.js', 'js/paint.js', 'js/layout.js',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-180.png',
 ];
 self.addEventListener('install', (e) => {

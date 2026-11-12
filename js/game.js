@@ -52,8 +52,8 @@ export class GameView {
     <div class="game">
       <header class="hud hud-top"></header>
       <div class="board-wrap"><div class="board-holder"><div class="bl-static"></div><div class="bl-dyn"></div></div><div class="toast-layer"></div></div>
-      <div class="prompt"></div>
       <footer class="hand-area">
+        <div class="prompt"></div>
         <div class="hud-me"></div>
         <div class="hand-row">
           <button class="draw-btn" type="button"></button>

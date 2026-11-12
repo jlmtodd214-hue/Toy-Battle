@@ -96,13 +96,13 @@ function tokenSVG(s, nodeId, [x, y, sx, sy], opts) {
     ${discs}
     <ellipse cx="0" cy="0" rx="${42 * sx}" ry="${42 * sy}" fill="${c.light}" opacity=".35"/>
     <g class="token${fresh}"><g class="bob t${t}">
-      <image href="assets/troops/${t}-${color}.png" x="${-90 * k}" y="${-150 * k}" width="${180 * k}" height="${180 * k}"/>
+      <image href="assets/troops/${t}-${color}.png" x="${-110 * k}" y="${-186 * k}" width="${220 * k}" height="${220 * k}"/>
     </g></g>
-    <g transform="translate(${-58 * k} ${-118 * k}) scale(${k})">
+    <g transform="translate(${-66 * k} ${-140 * k}) scale(${k})">
       ${C(0, 0, 21, c.main)}<circle r="21" fill="none" stroke="#fff" stroke-width="3.5"/>
       <text y="9" text-anchor="middle" font-size="26" font-weight="900" fill="#fff" stroke="${c.dark}" stroke-width="1.5" font-family="'Lilita One', Nunito, sans-serif">${t === 0 ? '★' : t}</text>
     </g>
-    ${depth > 1 ? `<g transform="translate(${56 * k} ${-112 * k}) scale(${k})">${C(0, 0, 16, '#222', 'r')}<text y="6.5" text-anchor="middle" font-size="18" font-weight="800" fill="#fff" font-family="Nunito, sans-serif">×${depth}</text></g>` : ''}
+    ${depth > 1 ? `<g transform="translate(${64 * k} ${-134 * k}) scale(${k})">${C(0, 0, 16, '#222', 'r')}<text y="6.5" text-anchor="middle" font-size="18" font-weight="800" fill="#fff" font-family="Nunito, sans-serif">×${depth}</text></g>` : ''}
   </g>`;
 }
 
@@ -133,12 +133,12 @@ export function renderDynamic(s, m, opts = {}) {
   if (opts.ghost) {
     const [x, y, sx, sy] = L.nodes[opts.ghost.node], t = typeOf(opts.ghost.id), color = ownerOf(opts.ghost.id), c = TEAM[color];
     out += `<g class="ghost-token" transform="translate(${x} ${y})"><ellipse rx="${56 * sx}" ry="${56 * sy}" fill="${c.main}" stroke="#fff" stroke-width="5"/>
-      <g class="bob t${t}"><image href="assets/troops/${t}-${color}.png" x="${-90 * sx}" y="${-150 * sx}" width="${180 * sx}" height="${180 * sx}"/></g></g>`;
+      <g class="bob t${t}"><image href="assets/troops/${t}-${color}.png" x="${-110 * sx}" y="${-186 * sx}" width="${220 * sx}" height="${220 * sx}"/></g></g>`;
   }
   // tap targets: base footprint plus the space a standing figure occupies, nearest on top
   out += '<g class="hits">';
   for (const id of Object.keys(m.nodes).sort((a, b) => L.nodes[a][1] - L.nodes[b][1])) {
-    const [x, y, sx, sy] = L.nodes[id], w = (m.nodes[id].hq ? 190 : 150) * sx, up = 120 * sx, down = 75 * sy;
+    const [x, y, sx, sy] = L.nodes[id], w = (m.nodes[id].hq ? 190 : 150) * sx, up = 150 * sx, down = 75 * sy;
     out += `<rect class="hit" data-node="${id}" x="${x - w / 2}" y="${y - up}" width="${w}" height="${up + down}" fill="transparent"/>`;
   }
   return out + '</g></svg>';
