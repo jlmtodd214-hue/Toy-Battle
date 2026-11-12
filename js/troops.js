@@ -7,13 +7,13 @@ export const TEAM = {
 
 export const TROOPS = {
   0: { name: 'Bop', title: 'Jack-in-the-Box', quote: 'Surprise!', effect: 'No effect. As a joker, Bop may be placed on top of any enemy Troop, and any enemy Troop may cover it.' },
-  1: { name: 'Tinker', title: 'Wind-up Mouse', quote: 'Wind me up and watch me go!', effect: 'You may draw 2 Troops from your reserve and place them on your rack. (Only 1 if you already have 7.)' },
+  1: { name: 'Rattles', title: 'Skeleton Warrior', quote: 'I have a bone to pick!', effect: 'You may draw 2 Troops from your reserve and place them on your rack. (Only 1 if you already have 7.)' },
   2: { name: 'Rumble', title: 'Tin Drummer', quote: 'Fall in, troops!', effect: 'You may place 1 extra Troop on the Terrain and apply its effect. (Troop effects resolve first, then special base effects.)' },
-  3: { name: 'Bricks', title: 'Block Golem', quote: 'Me smash. Gently.', effect: 'You may choose 1 visible enemy Troop adjacent to Bricks (one path away) and discard it face up.' },
+  3: { name: 'Brutus', title: 'Armored Brawler', quote: 'Stand back. Way back.', effect: 'You may choose 1 visible enemy Troop adjacent to Brutus (one path away) and discard it face up.' },
   4: { name: 'Zip', title: 'Paper-Plane Ace', quote: 'Over the lines we go!', effect: 'You may ignore the connection rule and place Zip on any base. (To land on the enemy H.Q., which is not a base, Zip must be connected.)' },
-  5: { name: 'Mags', title: 'Horseshoe Magnet', quote: 'Come to Mags!', effect: 'You may take, at random, 1 Troop from your opponent\'s rack and discard it face up.' },
+  5: { name: 'Volt', title: 'Combat Robot', quote: 'Target locked.', effect: 'You may take, at random, 1 Troop from your opponent\'s rack and discard it face up.' },
   6: { name: 'Cuddles', title: 'Teddy Medic', quote: 'Group hug!', effect: 'You may draw 1 Troop from your reserve and place it on your rack.' },
-  7: { name: 'Titan', title: 'Toy Mech', quote: 'Stomp mode: ON.', effect: 'No effect.' },
+  7: { name: 'Treads', title: 'Wind-up Tank', quote: 'Rolling out!', effect: 'No effect.' },
 };
 
 const SKIN = '#f0c39b', STEEL = '#b9c2cb', GOLD = '#e0a82e', WOOD = '#b98348', INK = '#1b1b1b';
@@ -41,26 +41,32 @@ const ART = {
       </g>
     </g>`,
 
-  // Tin wind-up mouse.
-  1: (c) => `${shadow}
-    <path d="M22 80 Q6 78 8 64 Q9 56 15 58" fill="none" stroke="#6b5a55" stroke-width="2" stroke-linecap="round"/>
-    ${C(35, 91, 5, '#262626')}${C(65, 91, 5, '#262626')}
-    <g class="part-key">${R(78, 72, 9, 4, 1, GOLD, 'v')}${E(91, 66, 4.2, 6.5, GOLD)}${E(91, 80, 4.2, 6.5, GOLD)}${C(88, 74, 2.6, shade(GOLD, -0.2))}</g>
-    ${E(50, 74, 30, 18, '#a7b0ba')}
-    ${P('M21 70 Q50 63 79 70 L79 78 Q50 71 21 78 Z', c.main, 'v')}
-    <path d="M24 82 Q50 88 76 82" fill="none" stroke="#7d8791" stroke-width="1"/>
-    ${[30, 40, 50, 60, 70].map((x) => `<circle cx="${x}" cy="${x === 50 ? 64 : 65}" r="1" fill="#e6ebf0"/>`).join('')}
+  // Toy skeleton warrior with sword and shield.
+  1: (c) => {
+    const BONE = '#ece4cf', BD = '#b9ae92';
+    const bone = (x1, y1, x2, y2, w = 4) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${BD}" stroke-width="${w + 1.5}" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="${BONE}" stroke-width="${w}" stroke-linecap="round"/>`;
+    return `${shadow}
+    ${bone(43, 72, 40, 92)}${bone(57, 72, 60, 92)}
+    ${E(38, 93, 6, 3, BONE)}${E(62, 93, 6, 3, BONE)}
+    ${P('M38 66 Q50 60 62 66 L60 74 Q50 70 40 74 Z', BONE, 'v')}
+    ${R(48, 44, 4, 24, 2, BONE, 'h')}
+    ${[48, 53, 58].map((y) => `<path d="M38 ${y} Q50 ${y - 5} 62 ${y}" fill="none" stroke="${BD}" stroke-width="4.5" stroke-linecap="round"/><path d="M38 ${y} Q50 ${y - 5} 62 ${y}" fill="none" stroke="${BONE}" stroke-width="3" stroke-linecap="round"/>`).join('')}
+    <g class="part-arm">${bone(38, 46, 26, 62)}
+      ${C(20, 62, 15, c.main)}${C(20, 62, 10, shade(c.main, -0.2), 's')}${C(20, 62, 4, GOLD)}
+      <circle cx="20" cy="62" r="15" fill="none" stroke="${GOLD}" stroke-width="2"/></g>
+    <g class="part-arm2">${bone(62, 46, 76, 60)}
+      ${P('M80 58 L92 14 L95 15 L84 59 Z', STEEL, 'h')}
+      ${R(73, 56, 16, 4, 2, GOLD, 'v', 'transform="rotate(-15 81 58)"')}${C(78, 64, 3, '#7a4a24')}</g>
     <g class="part-head">
-      ${C(30, 33, 12, '#a7b0ba')}${C(30, 33, 7, '#f0a7b8', 's')}
-      ${C(70, 33, 12, '#a7b0ba')}${C(70, 33, 7, '#f0a7b8', 's')}
-      ${E(50, 49, 20, 17, '#b5bec7')}
-      ${E(50, 57, 9, 7, '#c8d0d7')}
-      ${C(50, 55, 3.3, '#d94f7f')}
-      ${eyes(42.5, 57.5, 46, 3.2)}
-      <path d="M41 57 h-12 M41 59.5 l-11 3 M59 57 h12 M59 59.5 l11 3" stroke="#3b3b3b" stroke-width=".7"/>
-    </g>`,
-
-  // Tin drummer soldier.
+      ${C(50, 27, 14, BONE)}${R(43, 34, 14, 9, 4, BONE, 'v')}
+      ${E(44.5, 27, 4.2, 4.8, '#1b1b1b', '')}${E(55.5, 27, 4.2, 4.8, '#1b1b1b', '')}
+      <g class="eyes"><circle cx="44.5" cy="27.5" r="1.6" fill="${c.light}" filter="url(#f-glow)"/><circle cx="55.5" cy="27.5" r="1.6" fill="${c.light}" filter="url(#f-glow)"/></g>
+      <path d="M50 31 l-2 4 h4 z" fill="#1b1b1b"/>
+      <path d="M45 39.5 h10 M47 37.5 v4 M50 37.5 v4 M53 37.5 v4" stroke="#6f6650" stroke-width="1"/>
+      ${P('M35 24 Q36 9 50 8 Q64 9 65 24 L60 22 Q50 18 40 22 Z', c.main, 'v')}
+      ${P('M48 9 Q50 0 52 9 Z', c.light, 'v')}${R(46, 3, 8, 10, 3, shade(c.main, 0.2), 'h')}
+    </g>`;
+  },
   2: (c) => `${shadow}
     <g class="part-arm"><path d="M25 62 L9 43" stroke="${WOOD}" stroke-width="3" stroke-linecap="round"/>${C(9, 43, 3, shade(WOOD, 0.2))}${C(25, 62, 4.2, SKIN)}</g>
     <g class="part-arm2"><path d="M75 62 L91 43" stroke="${WOOD}" stroke-width="3" stroke-linecap="round"/>${C(91, 43, 3, shade(WOOD, 0.2))}${C(75, 62, 4.2, SKIN)}</g>
@@ -82,21 +88,27 @@ const ART = {
     ${E(50, 71, 24, 6, '#efe5cf')}
     <ellipse cx="50" cy="71" rx="24" ry="6" fill="none" stroke="${c.main}" stroke-width="3"/>`,
 
-  // Interlocking-brick golem.
-  3: (c) => `${shadow}
-    ${box(28, 79, 18, 15, 4, '#6e48b8')}${box(52, 79, 18, 15, 4, '#f08a00')}
-    <g class="part-arm">${box(6, 49, 16, 16, 4, '#f2c11a')}${stud(12, 47, '#f2c11a')}${stud(18, 47, '#f2c11a')}</g>
-    ${box(24, 46, 48, 33, 6, c.main)}
-    ${[34, 46, 58, 70].map((x) => stud(x - 2, 42, c.main)).join('')}
-    <g class="part-arm2">${box(78, 49, 16, 16, 4, '#3d9a45')}${stud(84, 47, '#3d9a45')}${stud(90, 47, '#3d9a45')}</g>
+  // Heavy armored brawler with huge gauntlets.
+  3: (c) => {
+    const ARM = '#a4adb7';
+    return `${shadow}
+    ${R(34, 76, 13, 16, 3, ARM, 'h')}${R(53, 76, 13, 16, 3, ARM, 'h')}
+    ${R(31, 89, 18, 7, 3, '#5d656e', 'v')}${R(51, 89, 18, 7, 3, '#5d656e', 'v')}
+    <g class="part-arm">${R(14, 44, 14, 22, 6, ARM, 'h')}${C(21, 44, 10, c.main)}${C(17, 72, 13, '#8e98a3')}
+      <path d="M8 69 h18 M8 74 h18" stroke="#5d656e" stroke-width="1.4"/></g>
+    <g class="part-arm2">${R(72, 44, 14, 22, 6, ARM, 'h')}${C(79, 44, 10, c.main)}${C(83, 72, 13, '#8e98a3')}
+      <path d="M74 69 h18 M74 74 h18" stroke="#5d656e" stroke-width="1.4"/></g>
+    ${P('M30 42 Q50 34 70 42 L66 76 Q50 82 34 76 Z', ARM, 'r')}
+    ${P('M44 44 L56 44 L54 74 L46 74 Z', c.main, 'v')}
+    ${R(32, 70, 36, 7, 2, '#6b4a2a', 'v')}${R(46, 69, 8, 9, 2, GOLD, 'v')}
+    ${[38, 62].map((x) => C(x, 50, 1.8, '#e8edf2', '')).join('')}
     <g class="part-head">
-      ${box(32, 14, 32, 26, 6, '#f2c11a')}${stud(41, 10, '#f2c11a')}${stud(56, 10, '#f2c11a')}
-      ${eyes(42, 54, 25, 3)}
-      <path d="M37.5 19 l8 3 M58.5 19 l-8 3" stroke="#2a2a2a" stroke-width="2.2" stroke-linecap="round"/>
-      ${R(41, 31, 14, 3.5, 1.7, '#3a2a12', '')}
-    </g>`,
-
-  // Folded paper plane with a peg-doll pilot.
+      ${P('M36 34 V18 Q36 6 50 6 Q64 6 64 18 V34 Q50 38 36 34 Z', '#b3bcc6', 'h')}
+      ${R(39, 18, 22, 4, 2, '#151515', '')}${R(48, 18, 4, 14, 2, '#151515', '')}
+      ${[44, 56].map((x) => C(x, 28, 1.2, '#d9dee4', '')).join('')}
+      ${P('M47 7 Q50 -10 60 -6 Q54 -2 53 7 Z', c.main, 'v')}
+    </g>`;
+  },
   4: (c) => `<g class="part-fly">
     <ellipse cx="54" cy="94" rx="30" ry="4" fill="#000" opacity=".22" filter="url(#f-blur2)"/>
     ${P('M6 58 L96 30 L52 61 Z', '#fbfaf5', 'v')}
@@ -115,20 +127,30 @@ const ART = {
     <path d="M96 30 L48 68" stroke="#bdb7a8" stroke-width=".8"/>
   </g>`,
 
-  // Painted horseshoe magnet.
-  5: (c) => `${shadow}
-    <g class="part-spark" filter="url(#f-glow)"><path d="M10 22 l6 6 M5 36 h8 M90 22 l-6 6 M95 36 h-8" stroke="#ffe27a" stroke-width="2" stroke-linecap="round"/></g>
-    ${P('M20 90 V46 a30 30 0 0 1 60 0 V90 H62 V46 a12 12 0 0 0 -24 0 V90 Z', c.main, 'r')}
-    ${P('M20 90 V46 a30 30 0 0 1 60 0 V90 H62 V46 a12 12 0 0 0 -24 0 V90 Z', 'transparent', 'h')}
-    ${R(20, 76, 18, 16, 1, STEEL, 'v')}${R(62, 76, 18, 16, 1, STEEL, 'v')}
-    ${P('M66 70 l6 -3.5 6 3.5 v7 l-6 3.5 -6 -3.5z', '#8f99a3', 'r')}
+  // Sleek combat robot with an arm blaster.
+  5: (c) => {
+    const WH = '#e7ebf0';
+    return `${shadow}
+    ${R(37, 74, 10, 18, 4, '#9aa4ae', 'h')}${R(53, 74, 10, 18, 4, '#9aa4ae', 'h')}
+    ${C(42, 80, 4, c.main)}${C(58, 80, 4, c.main)}
+    ${P('M33 96 L36 88 H48 L50 96 Z M50 96 L52 88 H64 L67 96 Z', WH, 'v')}
+    ${P('M30 44 L44 36 L44 30 L56 30 L56 36 L70 44 L66 50 L34 50 Z', '#596370', 'v')}
+    <g class="part-arm">${R(18, 46, 11, 20, 5, WH, 'h')}${C(23, 46, 8, c.main)}
+      ${R(12, 62, 22, 11, 5, '#5d656e', 'h')}${R(8, 64, 8, 7, 2, '#3a3f45', 'h')}
+      <circle cx="9" cy="67.5" r="3.2" fill="#7df9ff" filter="url(#f-glow)" class="part-light"/></g>
+    <g class="part-arm2">${R(71, 46, 11, 20, 5, WH, 'h')}${C(77, 46, 8, c.main)}${C(77, 69, 6.5, '#8e98a3')}</g>
+    ${P('M34 48 H66 L62 74 H38 Z', WH, 'r')}
+    ${P('M42 52 H58 L56 64 H44 Z', c.main, 'v')}
+    <circle cx="50" cy="58" r="3.2" fill="#7df9ff" filter="url(#f-glow)" class="part-light2"/>
+    ${R(38, 70, 24, 6, 2, '#596370', 'v')}
     <g class="part-head">
-      ${eyes(40, 60, 26, 3.6)}
-      <path d="M43 35 Q50 40 57 35" fill="none" stroke="#2a1010" stroke-width="1.8" stroke-linecap="round"/>
-    </g>
-    <path d="M27 40 Q29 27 40 21" fill="none" stroke="#fff" stroke-width="2.4" opacity=".5" stroke-linecap="round"/>`,
-
-  // Plush teddy medic.
+      ${P('M36 32 Q36 10 50 10 Q64 10 64 32 Q50 36 36 32 Z', WH, 'r')}
+      ${P('M38 20 Q50 14 62 20 L61 27 Q50 24 39 27 Z', '#0f1b26', 'v')}
+      <path class="visor" d="M41 22 Q50 18.5 59 22" stroke="#7df9ff" stroke-width="2.6" fill="none" stroke-linecap="round" filter="url(#f-glow)"/>
+      ${R(33, 18, 4, 12, 2, c.main, 'h')}${R(63, 18, 4, 12, 2, c.main, 'h')}
+      <path d="M64 18 L70 6" stroke="#596370" stroke-width="1.8"/><circle cx="70" cy="6" r="2" fill="#ff5c7a" class="part-light"/>
+    </g>`;
+  },
   6: (c) => {
     const FUR = '#a8713f', LT = '#e3c49b';
     return `${shadow}<g filter="url(#f-fur)">
@@ -154,21 +176,20 @@ const ART = {
     </g>`;
   },
 
-  // Painted toy mech.
+  // Wind-up toy tank.
   7: (c) => `${shadow}
-    ${R(28, 78, 15, 14, 3, '#7c8691', 'h')}${R(57, 78, 15, 14, 3, '#7c8691', 'h')}
-    ${R(23, 89, 24, 7, 2, '#4a525a', 'v')}${R(53, 89, 24, 7, 2, '#4a525a', 'v')}
-    <g class="part-arm">${R(4, 44, 16, 30, 6, c.main, 'h')}${R(2, 72, 20, 12, 3, STEEL, 'v')}${C(13, 44, 8, STEEL)}</g>
-    <g class="part-arm2">${R(80, 44, 16, 30, 6, c.main, 'h')}${R(78, 72, 20, 12, 3, STEEL, 'v')}${C(87, 44, 8, STEEL)}</g>
-    ${box(20, 42, 56, 36, 5, '#98a2ac')}
-    ${R(27, 48, 42, 22, 4, c.main, 'v')}
-    ${R(32, 53, 32, 12, 3, '#1d2833', 'v')}
-    <g filter="url(#f-glow)"><circle cx="40" cy="59" r="2.6" fill="#ffd34d" class="part-light"/><circle cx="48" cy="59" r="2.6" fill="#4ade80" class="part-light2"/><circle cx="56" cy="59" r="2.6" fill="#ff5c7a" class="part-light"/></g>
+    ${R(10, 74, 80, 20, 10, '#2c2f33', 'v')}
+    ${[20, 34, 48, 62, 76].map((x) => C(x + 2, 84, 6, '#8e98a3')).join('')}
+    <path d="M14 76 h72 M14 92 h72" stroke="#4a4f55" stroke-width="2" stroke-dasharray="3 3"/>
+    ${box(14, 56, 66, 18, 6, c.main)}
+    ${P('M50 62 l2.5 5 5.5 .6 -4 3.7 1.1 5.4 -5 -2.8 -5 2.8 1.1 -5.4 -4 -3.7 5.5 -.6z', '#f3efe6', 'r')}
     <g class="part-head">
-      <path d="M50 3 V12" stroke="#4a525a" stroke-width="2.2"/><g class="part-light2">${C(50, 3, 3.4, '#e5484d')}</g>
-      ${box(29, 14, 36, 25, 5, c.main)}
-      ${R(33, 20, 28, 11, 5.5, '#122030', 'v')}
-      <g filter="url(#f-glow)"><rect x="37" y="23.5" width="8" height="4" rx="2" fill="#7df9ff" class="visor"/><rect x="49" y="23.5" width="8" height="4" rx="2" fill="#7df9ff" class="visor"/></g>
+      ${R(56, 36, 40, 7, 3.5, '#6b737c', 'h')}${R(92, 34, 7, 11, 2, '#4a525a', 'h')}
+      ${P('M28 56 Q30 34 50 32 Q70 34 72 56 Z', shade(c.main, -0.1), 'r')}
+      ${R(40, 40, 18, 7, 3.5, '#1d2833', 'v')}
+      ${E(52, 31, 9, 3.5, '#5d656e')}
+      <path d="M36 40 V14" stroke="#4a525a" stroke-width="1.6"/>
+      <path class="flag" d="M36 14 l14 4 -14 4z" fill="${c.light}"/>
     </g>`,
 };
 
@@ -189,7 +210,7 @@ const ICON = {
   2: '<rect x="4" y="9" width="9" height="12" rx="2" fill="#fff" stroke="#1d1d1d" stroke-width="1.5"/><path d="M17 3v10M12 8h10" stroke="#1d1d1d" stroke-width="2.5" stroke-linecap="round"/>',
   3: '<rect x="4" y="5" width="13" height="15" rx="2" fill="#fff" stroke="#1d1d1d" stroke-width="1.5"/><path d="M7 9l7 7M14 9l-7 7" stroke="#e5484d" stroke-width="2.5" stroke-linecap="round"/><circle cx="20" cy="12.5" r="2" fill="#1d1d1d"/>',
   4: '<path d="M2 13L22 5l-9 15-3-6z" fill="#fff" stroke="#1d1d1d" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 14L22 5" stroke="#1d1d1d" stroke-width="1.2"/>',
-  5: '<path d="M4 4v8a6 6 0 0 0 12 0V4h-4v8a2 2 0 0 1-4 0V4z" fill="#e5484d" stroke="#1d1d1d" stroke-width="1.5"/><path d="M15 15l6 6M21 15l-6 6" stroke="#1d1d1d" stroke-width="2.2" stroke-linecap="round"/>',
+  5: '<rect x="3" y="5" width="11" height="15" rx="2" fill="#fff" stroke="#1d1d1d" stroke-width="1.5"/><path d="M5.5 9l6 7M11.5 9l-6 7" stroke="#e5484d" stroke-width="2.2" stroke-linecap="round"/><path d="M19 2l-4 8h4l-3 8" fill="none" stroke="#f2b705" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>',
   6: '<rect x="5" y="5" width="11" height="15" rx="2" fill="#fff" stroke="#1d1d1d" stroke-width="1.5"/><text x="19" y="22" font-size="9" font-weight="900" text-anchor="middle" fill="#1d1d1d">+1</text>',
   7: '<path d="M6 20V9l6-5 6 5v11z" fill="#9aa3ad" stroke="#1d1d1d" stroke-width="1.5"/>',
 };

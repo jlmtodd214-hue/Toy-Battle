@@ -27,14 +27,14 @@ The full troop and terrain rules are in the app under **How to play**.
 
 | ★/# | Troop | Effect |
 |---|---|---|
-| ★ | Bop | Joker: covers any enemy and can be covered by any enemy. |
-| 1 | Tinker | Draw 2 (only 1 if you already have 7). |
-| 2 | Rumble | Place 1 extra Troop and apply its effect. |
-| 3 | Bricks | Discard 1 adjacent visible enemy Troop. |
-| 4 | Zip | Ignore the connection rule when placing on a base. |
-| 5 | Mags | Discard 1 random Troop from the opponent's rack. |
-| 6 | Cuddles | Draw 1. |
-| 7 | Titan | No effect. |
+| ★ | Bop (jack-in-the-box) | Joker: covers any enemy and can be covered by any enemy. |
+| 1 | Rattles (skeleton warrior) | Draw 2 (only 1 if you already have 7). |
+| 2 | Rumble (tin drummer) | Place 1 extra Troop and apply its effect. |
+| 3 | Brutus (armored brawler) | Discard 1 adjacent visible enemy Troop. |
+| 4 | Zip (paper-plane ace) | Ignore the connection rule when placing on a base. |
+| 5 | Volt (combat robot) | Discard 1 random Troop from the opponent's rack. |
+| 6 | Cuddles (teddy medic) | Draw 1. |
+| 7 | Treads (wind-up tank) | No effect. |
 
 The 8 maps are Backyard Fort, Candy Clouds, Lava Sandbox, Haunted Attic, Bathtub Bay, Sandpit Trenches, Kiddie Pool and Rocket Room. Each has its own special-base mechanic.
 
@@ -69,7 +69,7 @@ The 8 maps are Backyard Fort, Candy Clouds, Lava Sandbox, Haunted Attic, Bathtub
   - **Quick match** joins any waiting public game on a random map, or opens one and waits.
   - **Challenge friend** sends a challenge by player name. The game shows up in their list with **Accept** and **Decline** buttons.
   - **Invite link / code** shares a link (or a 5-letter code) that drops your friend straight into the game.
-- Turns are asynchronous. Play your turn and it is sent when you tap **Deploy**, or when your effects finish resolving. Your opponent sees a recap of your move ("placed Titan (7) on top of your Bricks…") with the changed spots highlighted.
+- Turns are asynchronous. Play your turn and it is sent when you tap **Deploy**, or when your effects finish resolving. Your opponent sees a recap of your move ("placed Treads (7) on top of your Brutus…") with the changed spots highlighted.
 - Games update live while the app is open. There are no push notifications, so check the **Your games** list, where your-turn games are highlighted.
 
 ## Running locally

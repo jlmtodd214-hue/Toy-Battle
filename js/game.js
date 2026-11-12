@@ -15,7 +15,7 @@ export function describeEvent(e, viewer, names) {
     case 'place': return `${who} placed ${tName(e.id)}${e.covered ? ` on top of ${your(e.covered)} ${tName(e.covered)}` : ''}${e.extra ? ' (extra)' : ''}.`;
     case 'draw': return `${who} drew ${e.n} Troop${e.n > 1 ? 's' : ''}.`;
     case 'smash': return `${who} smashed ${your(e.id)} ${tName(e.id)}.`;
-    case 'steal': return `${who} magnet-yanked ${your(e.id)} ${tName(e.id)} from the rack.`;
+    case 'steal': return `${who} blasted ${your(e.id)} ${tName(e.id)} from the rack.`;
     case 'retreat': return `${who} pulled ${tName(e.id)} back to the rack.`;
     case 'push': return `${who} pushed ${your(e.id)} ${tName(e.id)}.`;
     case 'revive': return `${who} revived ${tName(e.id)}.`;
@@ -208,7 +208,7 @@ export class GameView {
       const src = typeof pd.src === 'number' ? TROOPS[pd.src].name : SPECIALS[pd.src]?.name;
       switch (pd.kind) {
         case 'draw': html = label(`<b>${src}:</b> draw ${pd.n} Troop${pd.n > 1 ? 's' : ''} from your reserve?`, true, '<button class="btn go" data-act="use">Draw</button>'); break;
-        case 'steal': html = label(`<b>${src}:</b> yank 1 random Troop off your opponent's rack and discard it?`, true, '<button class="btn go" data-act="use">Yank!</button>'); break;
+        case 'steal': html = label(`<b>${src}:</b> blast 1 random Troop off your opponent's rack and discard it?`, true, '<button class="btn go" data-act="use">Blast!</button>'); break;
         case 'extra': html = label(`<b>${src}:</b> pick a card and place 1 extra Troop.`); break;
         case 'smash': html = label(`<b>${src}:</b> tap an adjacent enemy Troop to smash it.`); break;
         case 'retreat': html = label(`<b>${src}:</b> tap one of your other Troops to return it to your rack.`); break;
