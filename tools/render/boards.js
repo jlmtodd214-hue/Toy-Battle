@@ -348,6 +348,8 @@ export function buildBoard(mapId, flip) {
   const ground = mesh(new THREE.PlaneGeometry(BW, BH), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.95, metalness: 0, bumpMap: dirtTex, bumpScale: 0.6, envMapIntensity: 0.25 }), 0, 0, 0, { rx: -Math.PI / 2, cast: false });
   if (flip) ground.rotation.z = Math.PI;
   scene.add(ground);
+  const SURROUND = { fort: '#3d7426', clouds: '#e7c3e6', lava: '#2a1c16', attic: '#33221a', bay: '#d9e1e8', trenches: '#cfa962', pool: '#e2c18a', rocket: '#181c2d' };
+  scene.add(mesh(new THREE.PlaneGeometry(6000, 8000), new THREE.MeshStandardMaterial({ color: SURROUND[m.theme], roughness: 1, bumpMap: dirtTex, bumpScale: 0.6 }), 0, -0.5, 0, { rx: -Math.PI / 2, cast: false }));
 
   const nodes = {};
   for (const id in m.nodes) nodes[id] = P(m.nodes[id]);
@@ -386,6 +388,56 @@ export function buildBoard(mapId, flip) {
   return scene;
 }
 
+// Angled "arena" camera fitted so every base, H.Q. and standing troop is in frame.
+function fitCamera(m, flip, aspect) {
+  const P = (n) => (flip ? { x: 500 - n.x, z: 800 - n.y } : { x: n.x - 500, z: n.y - 800 });
+  const cam = new THREE.PerspectiveCamera(34, aspect, 10, 30000);
+  const el = (54 * Math.PI) / 180;
+  const pts = [];
+  for (const id in m.nodes) {
+    const p = P(m.nodes[id]), r = m.nodes[id].hq ? 100 : 80;
+    for (const [dx, dz] of [[-r, -r], [r, -r], [-r, r], [r, r]]) pts.push(new THREE.Vector3(p.x + dx, 0, p.z + dz));
+    pts.push(new THREE.Vector3(p.x, 170, p.z));
+  }
+  let tz = 0, d = 3000;
+  const place = () => { cam.position.set(0, Math.sin(el) * d, tz + Math.cos(el) * d); cam.lookAt(0, 0, tz); cam.updateMatrixWorld(); cam.updateProjectionMatrix(); };
+  const extent = () => { let mx = 0, ymin = 9, ymax = -9; for (const v of pts) { const q = v.clone().project(cam); mx = Math.max(mx, Math.abs(q.x)); ymin = Math.min(ymin, q.y); ymax = Math.max(ymax, q.y); } return { mx, ymin, ymax }; };
+  for (let it = 0; it < 8; it++) {
+    let lo = 300, hi = 20000;
+    for (let k = 0; k < 40; k++) { d = (lo + hi) / 2; place(); const e = extent(); (Math.max(e.mx, e.ymax, -e.ymin) > 0.97 ? (lo = d) : (hi = d)); }
+    d = hi; place();
+    const e = extent(), yc = (e.ymin + e.ymax) / 2;
+    if (Math.abs(yc) < 0.003) break;
+    tz -= yc * 400;
+  }
+  return { cam, P };
+}
+
+// Screen positions (in the 1000 x 1600 board image space) of every node and medal slot.
+export function boardLayout(mapId, flip) {
+  const m = MAPS[mapId];
+  const { cam, P } = fitCamera(m, flip, BW / BH);
+  const px = (v) => { const q = v.clone().project(cam); return [(q.x + 1) / 2 * BW, (1 - q.y) / 2 * BH]; };
+  const r3 = (n) => Math.round(n * 100) / 100;
+  const nodes = {};
+  for (const id in m.nodes) {
+    const p = P(m.nodes[id]), y = m.nodes[id].hq ? 0 : 20;
+    const c = px(new THREE.Vector3(p.x, y, p.z));
+    const l = px(new THREE.Vector3(p.x - 64, y, p.z)), r = px(new THREE.Vector3(p.x + 64, y, p.z));
+    const f = px(new THREE.Vector3(p.x, y, p.z - 64)), n = px(new THREE.Vector3(p.x, y, p.z + 64));
+    nodes[id] = [r3(c[0]), r3(c[1]), r3((r[0] - l[0]) / 128), r3((n[1] - f[1]) / 128)];
+  }
+  const medals = m.regions.map((rg) => {
+    const c = P({ x: rg.x, y: rg.y });
+    return [...Array(rg.medals)].map((_, k) => {
+      const x = c.x + (k - (rg.medals - 1) / 2) * 46;
+      const a = px(new THREE.Vector3(x, 1, c.z)), l = px(new THREE.Vector3(x - 23, 1, c.z)), rr = px(new THREE.Vector3(x + 23, 1, c.z));
+      return [r3(a[0]), r3(a[1]), r3((rr[0] - l[0]) / 46)];
+    });
+  });
+  return { nodes, medals };
+}
+
 export function renderBoardImage(mapId, flip, width = 1200, quality = 0.86) {
   const h = Math.round(width * 1.6);
   renderer.setPixelRatio(1);
@@ -393,10 +445,8 @@ export function renderBoardImage(mapId, flip, width = 1200, quality = 0.86) {
   renderer.setClearColor(0x000000, 1);
   renderer.toneMappingExposure = 0.82;
   const scene = buildBoard(mapId, flip);
-  const cam = new THREE.OrthographicCamera(-BW / 2, BW / 2, BH / 2, -BH / 2, 1, 5000);
-  cam.position.set(0, 2000, 0);
-  cam.up.set(0, 0, -1);
-  cam.lookAt(0, 0, 0);
+  const { cam } = fitCamera(MAPS[mapId], flip, BW / BH);
+  scene.fog = null;
   renderer.render(scene, cam);
   renderer.toneMappingExposure = 1.05;
   return renderer.domElement.toDataURL('image/jpeg', quality);

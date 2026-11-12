@@ -59,7 +59,9 @@ export class GameView {
           <button class="draw-btn" type="button"></button>
           <div class="hand"></div>
         </div>
+        <div class="rack-meter"></div>
       </footer>
+      <div class="turn-banner"></div>
       <div class="drag-layer"></div>
       <div class="sheet-layer"></div>
     </div>`;
@@ -120,25 +122,38 @@ export class GameView {
     const P = s.players;
     const lockedOp = E.lockedSlots(s, op);
     const sniping = this.myTurn && s.pending?.kind === 'snipe';
+    this.$('.game').dataset.theme = m.theme;
+    const plate = (c, who) => `
+      <div class="plate ${c} ${s.current === c && s.phase !== 'over' ? 'active' : ''}">
+        <div class="plate-avatar">${troopArt(who === 'op' ? 7 : 2, c)}</div>
+        <div class="plate-info"><div class="pname">${esc(this.o.names[c])}</div><div class="plate-sub">Reserve ${P[c].reserve.length} · Rack ${P[c].rack.length}/8</div></div>
+        <div class="plate-medals"><img src="assets/medal.png" alt=""><b>${P[c].medals}</b><small>/${m.objective}</small></div>
+      </div>`;
     this.$('.hud-top').innerHTML = `
       <button class="icon-btn back" data-act="menu" aria-label="Menu">☰</button>
-      <div class="player-tag ${op} ${s.current === op && s.phase !== 'over' ? 'active' : ''}">
-        <div class="avatar">${troopArt(7, op)}</div>
-        <div><div class="pname">${esc(this.o.names[op])}</div>
-        <div class="pstats"><span class="medal-ico"></span>${P[op].medals}/${m.objective} · reserve ${P[op].reserve.length}</div></div>
-      </div>
+      ${plate(op, 'op')}
       <div class="op-rack ${sniping ? 'sniping' : ''}">${P[op].rack.map((_, i) => cardBackHTML(op, lockedOp[i], i)).join('')}</div>`;
 
     // my HUD
     const turnText = s.phase === 'over' ? 'Game over'
       : this.passScreen ? '' : s.current === me ? (s.pending ? 'Resolve effect' : 'Your turn') : `${esc(this.o.names[op])}'s turn…`;
     this.$('.hud-me').innerHTML = `
-      <div class="player-tag ${me} ${s.current === me && s.phase !== 'over' ? 'active' : ''}">
-        <div class="pname">${esc(this.o.names[me])}</div>
-        <div class="pstats"><span class="medal-ico"></span><b>${P[me].medals}</b>/${m.objective}</div>
-      </div>
+      ${plate(me, 'me')}
       <div class="turn-pill ${s.current === me ? 'mine' : ''}">${turnText}</div>
       <button class="discard-btn" data-act="discard">🗑 ${s.discard.length}</button>`;
+
+    // rack meter (8 slots)
+    const lockedMe = E.lockedSlots(s, me);
+    this.$('.rack-meter').innerHTML = `<div class="rm-bar ${me}">${[...Array(8)].map((_, i) => `<i class="${i < P[me].rack.length ? (lockedMe[i] ? 'on pin' : 'on') : ''}"></i>`).join('')}</div><span class="rm-label">${P[me].rack.length}<small>/8</small></span>`;
+
+    // big "your turn" banner when the turn comes to you
+    const mineNow = this.myTurn && !s.pending;
+    if (mineNow && !this.wasMine && s.phase !== 'over') {
+      const tb = this.$('.turn-banner');
+      tb.innerHTML = `<div class="tb-inner ${me}">YOUR TURN!</div>`;
+      tb.classList.remove('show'); void tb.offsetWidth; tb.classList.add('show');
+    }
+    this.wasMine = mineNow;
 
     // draw button
     const canDraw = this.myTurn && !s.pending && E.canDraw(s, me);
@@ -168,6 +183,9 @@ export class GameView {
 
     this.renderPrompt();
     this.renderOverlay();
+    const g = this.$('.game'), tray = this.$('.hand-area').offsetHeight, top = this.$('.hud-top').offsetHeight;
+    g.style.setProperty('--tray-h', tray + 'px');
+    g.style.setProperty('--top-h', Math.max(0, top - 22) + 'px');
   }
 
   canSelectCards() {

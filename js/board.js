@@ -1,9 +1,10 @@
 // SVG board renderer. Two layers:
 //  - static: terrain art (textures, paths, bases, H.Q.) — rendered once per map/orientation
 //  - dynamic: medals, troops, highlights and tap targets — re-rendered every update
-import { TEAM, troopArtGroup } from './troops.js';
+import { TEAM } from './troops.js';
 import { topOf, ownerOf, typeOf } from './engine.js';
-import { shade, C, E, R, P } from './paint.js';
+import { C, P } from './paint.js';
+import { LAYOUT } from './layout.js';
 
 export const W = 1000, H = 1600;
 const BASE = 128, HQ = 176;
@@ -56,88 +57,89 @@ const BOARD_DEFS = `
     <stop offset=".64" stop-color="#fff" stop-opacity=".4"/><stop offset=".8" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient>`;
 
 // ------------------------------------------------------------------ rendering
-const posFn = (m, flip) => (id) => { const n = m.nodes[id]; return flip ? { x: W - n.x, y: H - n.y } : { x: n.x, y: n.y }; };
+// Node positions on the angled renders: [x, y, scaleX, scaleY] in the 1000 x 1600 image space.
+const lay = (m, flip) => LAYOUT[m.id][flip ? 'b' : 'r'];
 
 // Terrain is a pre-rendered 3D image (tools/render); effect badges are drawn on top.
 export function renderStatic(m, { flip = false, lite = false } = {}) {
-  const P_ = posFn(m, flip);
+  const L = lay(m, flip);
   const src = lite ? `assets/boards/${m.id}-thumb.jpg` : `assets/boards/${m.id}-${flip ? 'b' : 'r'}.jpg`;
   let out = `<svg class="board board-static theme-${m.theme}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg"><defs>${BOARD_DEFS}</defs>`;
   out += `<image href="${src}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="none"/>`;
   if (!lite) {
     for (const id in m.nodes) {
-      const n = m.nodes[id], p = P_(id);
-      if (n.special && n.special !== 'restrict') out += badge(p.x + 58, p.y + 54, n.special);
-      if (n.allow) out += allowTag(p.x, p.y + (n.hq ? 96 : 84), n.allow);
+      const n = m.nodes[id], [x, y, sx, sy] = L.nodes[id];
+      if (n.special && n.special !== 'restrict') out += `<g transform="translate(${x + 60 * sx} ${y + 50 * sy}) scale(${sx})">${badge(0, 0, n.special)}</g>`;
+      if (n.allow) out += `<g transform="translate(${x} ${y + (n.hq ? 92 : 80) * sy}) scale(${sx})">${allowTag(0, 0, n.allow)}</g>`;
     }
     out += `<rect width="${W}" height="${H}" fill="url(#b-vignette)" pointer-events="none"/>`;
   }
   return out + '</svg>';
 }
 
-function tokenSVG(s, nodeId, p, opts) {
+// A troop stands on its base as a 3D figure; covered troops show as stacked discs.
+function tokenSVG(s, nodeId, [x, y, sx, sy], opts) {
   const st = s.stacks[nodeId];
   if (!st || !st.length) return '';
   const top = topOf(s, nodeId);
   const color = ownerOf(top), t = typeOf(top), c = TEAM[color];
-  const depth = st.length;
-  let under = '';
-  for (let i = Math.min(depth - 1, 3); i >= 1; i--) {
-    const below = st[st.length - 1 - i];
-    under += R(p.x - 56 + i * 7, p.y - 56 + i * 7, 112, 112, 16, TEAM[ownerOf(below)].dark, 'v');
+  const depth = st.length, k = sx;
+  let discs = '';
+  const n = Math.min(depth, 4);
+  for (let i = n - 1; i >= 0; i--) {
+    const id = st[st.length - 1 - i], tc = TEAM[ownerOf(id)];
+    discs += `<ellipse cx="0" cy="${i * 9 * sy}" rx="${56 * sx}" ry="${56 * sy}" fill="${i ? tc.dark : tc.main}" stroke="${i ? '#0008' : '#fff'}" stroke-width="${i ? 2 : 4}"/>`;
   }
   const fresh = opts.fresh?.has(nodeId) ? ' fresh' : '';
-  return `<g class="stack" data-node="${nodeId}">
-    <rect x="${p.x - 50}" y="${p.y - 44}" width="${112 + (depth - 1) * 7}" height="${112 + (depth - 1) * 7}" rx="16" fill="#000" opacity=".45" filter="url(#f-blur2)"/>
-    ${under}
-    <g transform="translate(${p.x} ${p.y})"><g class="token${fresh}">
-      ${R(-56, -56, 112, 112, 16, c.main, 'v')}
-      ${R(-49, -49, 98, 98, 11, shade(c.dark, -0.35), '')}
-      ${R(-49, -49, 98, 98, 11, c.light, 's', 'opacity=".55"')}
-      <rect x="-54" y="-54" width="108" height="108" rx="15" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>
-      <g class="bob t${t}"><g transform="translate(-47 -42) scale(.92)">${troopArtGroup(t, color)}</g></g>
-      <g transform="translate(-46 -46)">${C(0, 0, 19, '#f3f5f8')}<circle r="19" fill="none" stroke="${c.dark}" stroke-width="3"/></g>
-      <text x="-46" y="-37" text-anchor="middle" font-size="26" font-weight="900" fill="${c.dark}" font-family="Nunito, sans-serif">${t === 0 ? '★' : t}</text>
-      ${depth > 1 ? `<g transform="translate(44 46)">${C(0, 0, 16, '#222', 'r')}<text y="7" text-anchor="middle" font-size="19" font-weight="800" fill="#fff" font-family="Nunito, sans-serif">${depth}</text></g>` : ''}
-    </g></g></g>`;
+  return `<g class="stack" data-node="${nodeId}" transform="translate(${x} ${y})">
+    <ellipse cx="${6 * sx}" cy="${(10 + (n - 1) * 9) * sy}" rx="${62 * sx}" ry="${60 * sy}" fill="#000" opacity=".35" filter="url(#f-blur2)"/>
+    ${discs}
+    <ellipse cx="0" cy="0" rx="${42 * sx}" ry="${42 * sy}" fill="${c.light}" opacity=".35"/>
+    <g class="token${fresh}"><g class="bob t${t}">
+      <image href="assets/troops/${t}-${color}.png" x="${-90 * k}" y="${-150 * k}" width="${180 * k}" height="${180 * k}"/>
+    </g></g>
+    <g transform="translate(${-58 * k} ${-118 * k}) scale(${k})">
+      ${C(0, 0, 21, c.main)}<circle r="21" fill="none" stroke="#fff" stroke-width="3.5"/>
+      <text y="9" text-anchor="middle" font-size="26" font-weight="900" fill="#fff" stroke="${c.dark}" stroke-width="1.5" font-family="'Lilita One', Nunito, sans-serif">${t === 0 ? '★' : t}</text>
+    </g>
+    ${depth > 1 ? `<g transform="translate(${56 * k} ${-112 * k}) scale(${k})">${C(0, 0, 16, '#222', 'r')}<text y="6.5" text-anchor="middle" font-size="18" font-weight="800" fill="#fff" font-family="Nunito, sans-serif">×${depth}</text></g>` : ''}
+  </g>`;
 }
 
 export function renderDynamic(s, m, opts = {}) {
-  const P_ = posFn(m, !!opts.flip);
-  const flip = !!opts.flip;
+  const L = lay(m, !!opts.flip);
   let out = `<svg class="board board-dyn" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
   out += '<g class="medals">';
   m.regions.forEach((r, i) => {
-    const rx = flip ? W - r.x : r.x, ry = flip ? H - r.y : r.y;
     const taken = s.taken[i];
-    for (let k = 0; k < r.medals; k++) {
-      const x = rx + (k - (r.medals - 1) / 2) * 46;
-      if (taken) out += `<circle cx="${x}" cy="${ry}" r="17" fill="none" stroke="${TEAM[taken].main}" stroke-width="4" stroke-dasharray="6 5"/>`;
-      else out += `<image class="medal" href="assets/medal.png" x="${x - 23}" y="${ry - 23}" width="46" height="46"/>`;
+    for (const [x, y, k] of L.medals[i]) {
+      if (taken) out += `<ellipse cx="${x}" cy="${y}" rx="${17 * k}" ry="${12 * k}" fill="none" stroke="${TEAM[taken].main}" stroke-width="${4 * k}" stroke-dasharray="${6 * k} ${5 * k}"/>`;
+      else out += `<image class="medal" href="assets/medal.png" x="${x - 26 * k}" y="${y - 30 * k}" width="${52 * k}" height="${52 * k}"/>`;
     }
   });
   out += '</g>';
-  if (opts.recent) for (const id of opts.recent) { const p = P_(id); out += `<g class="recent"><rect x="${p.x - 75}" y="${p.y - 75}" width="150" height="150" rx="26" fill="none" stroke="#ff9f1c" stroke-width="8"/></g>`; }
-  out += '<g class="tokens">';
-  for (const id in s.stacks) out += tokenSVG(s, id, P_(id), opts);
-  out += '</g>';
+  const ring = (id, rpx, cls, extra = '') => { const [x, y, sx, sy] = L.nodes[id]; return `<ellipse class="${cls}" cx="${x}" cy="${y}" rx="${rpx * sx}" ry="${rpx * sy}" fill="none" ${extra}/>`; };
+  if (opts.recent) for (const id of opts.recent) out += `<g class="recent">${ring(id, 82, '', 'stroke="#ff9f1c" stroke-width="8"')}</g>`;
   if (opts.highlight) {
     out += '<g class="hl">';
-    for (const [id, kind] of opts.highlight) {
-      const p = P_(id), size = m.nodes[id].hq ? HQ + 14 : BASE + 26;
-      out += `<g class="hl-${kind}" data-node="${id}"><rect class="hl-ring" fill="none" x="${p.x - size / 2}" y="${p.y - size / 2}" width="${size}" height="${size}" rx="30"/></g>`;
-    }
+    for (const [id, kind] of opts.highlight) out += `<g class="hl-${kind}" data-node="${id}">${ring(id, m.nodes[id].hq ? 104 : 80, 'hl-ring')}</g>`;
     out += '</g>';
   }
+  // troops, far to near so nearer figures overlap farther ones
+  const ids = Object.keys(s.stacks).filter((id) => s.stacks[id].length).sort((a, b) => L.nodes[a][1] - L.nodes[b][1]);
+  out += '<g class="tokens">';
+  for (const id of ids) out += tokenSVG(s, id, L.nodes[id], opts);
+  out += '</g>';
   if (opts.ghost) {
-    const p = P_(opts.ghost.node), t = typeOf(opts.ghost.id), color = ownerOf(opts.ghost.id), c = TEAM[color];
-    out += `<g class="ghost-token" transform="translate(${p.x} ${p.y})">${R(-56, -56, 112, 112, 16, c.main, 'v', 'stroke="#fff" stroke-width="6"')}
-      <g class="bob t${t}"><g transform="translate(-47 -42) scale(.92)">${troopArtGroup(t, color)}</g></g></g>`;
+    const [x, y, sx, sy] = L.nodes[opts.ghost.node], t = typeOf(opts.ghost.id), color = ownerOf(opts.ghost.id), c = TEAM[color];
+    out += `<g class="ghost-token" transform="translate(${x} ${y})"><ellipse rx="${56 * sx}" ry="${56 * sy}" fill="${c.main}" stroke="#fff" stroke-width="5"/>
+      <g class="bob t${t}"><image href="assets/troops/${t}-${color}.png" x="${-90 * sx}" y="${-150 * sx}" width="${180 * sx}" height="${180 * sx}"/></g></g>`;
   }
+  // tap targets: base footprint plus the space a standing figure occupies, nearest on top
   out += '<g class="hits">';
-  for (const id in m.nodes) {
-    const p = P_(id), size = m.nodes[id].hq ? HQ + 20 : BASE + 30;
-    out += `<rect class="hit" data-node="${id}" x="${p.x - size / 2}" y="${p.y - size / 2}" width="${size}" height="${size}" fill="transparent"/>`;
+  for (const id of Object.keys(m.nodes).sort((a, b) => L.nodes[a][1] - L.nodes[b][1])) {
+    const [x, y, sx, sy] = L.nodes[id], w = (m.nodes[id].hq ? 190 : 150) * sx, up = 120 * sx, down = 75 * sy;
+    out += `<rect class="hit" data-node="${id}" x="${x - w / 2}" y="${y - up}" width="${w}" height="${up + down}" fill="transparent"/>`;
   }
   return out + '</g></svg>';
 }
