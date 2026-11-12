@@ -375,3 +375,50 @@ svg .stack .bob { transform-origin: 50% 100%; }
 .game .prompt .bar .txt span { font-size: 12px; }
 .game .prompt .bar .btn { flex: none; }
 .game .prompt .bar.hint { padding: 4px 10px; font-size: 12px; }
+
+/* ---- full-height screen + board that fills the space fluidly ---- */
+html, body, #app { height: 100%; height: 100dvh; }
+body { background: #141a33; }
+.screen { height: 100%; height: 100dvh; }
+.game { height: 100%; height: 100dvh; }
+.game .board-wrap { overflow: hidden; }
+.game .board-wrap::before { content: ''; position: absolute; inset: -40px; background: var(--board-img) center / cover no-repeat; filter: blur(22px) brightness(.8); transform: scale(1.15); z-index: -1; }
+.game .board-holder svg.board { overflow: visible; }
+
+/* ---- bigger cards and a fuller tray ---- */
+.game .hand-area { padding: 10px 10px calc(14px + var(--safe-b)); }
+.game .hand { gap: 9px; padding-top: 16px; overflow-x: auto; }
+.game .card { width: calc((min(100vw, 560px) - 112px) / 4); max-width: 116px; }
+.game .card-name { font-size: 14px; bottom: 4px; }
+.game .card::before { inset: 6px 6px 22px; }
+.game .draw-btn { width: 70px; }
+.game .db-card .card-back { width: 62px; height: 84px; }
+.game .rack-meter { margin-top: 10px; }
+.game .rm-bar i { height: 16px; }
+.game .hud-me { margin-bottom: 8px; }
+.game .hud-me .plate { max-width: 230px; }
+.game .board-wrap { bottom: var(--tray-h, 196px); }
+.turn-banner .tb-inner { white-space: nowrap; font-size: clamp(30px, 11vw, 52px); }
+/* short screens (iPhone SE / mini): compact tray so the board keeps most of the screen */
+@media (max-height: 760px) {
+  .game .hand-area { padding: 6px 8px calc(8px + var(--safe-b)); }
+  .game .card { max-width: 70px; }
+  .game .card-name { font-size: 11.5px; }
+  .game .card-badge { width: 26px; height: 26px; font-size: 16px; }
+  .game .draw-btn { width: 56px; }
+  .game .db-card .card-back { width: 50px; height: 66px; }
+  .game .draw-btn small { font-size: 9.5px; }
+  .game .hud-me { margin-bottom: 4px; }
+  .game .hud-me .plate { padding: 2px 6px; }
+  .game .plate-sub { display: none; }
+  .game .plate-medals img { width: 18px; height: 18px; }
+  .game .plate-medals b { font-size: 16px; }
+  .turn-pill { font-size: 12px; padding: 4px 10px; }
+  .game .rack-meter { margin-top: 6px; }
+  .game .rm-bar i { height: 10px; }
+  .rm-label { font-size: 16px; }
+  .game .prompt .bar { font-size: 11.5px; padding: 4px 8px; }
+  .game .prompt .bar .txt { -webkit-line-clamp: 2; }
+  .game .prompt .bar .btn { font-size: 14px; padding: 4px 10px; }
+  .game .hud-top .plate-avatar { width: 32px; height: 32px; }
+}

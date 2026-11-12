@@ -1,7 +1,7 @@
 // The in-game screen: board, HUD, hand (drag or tap to deploy), effect prompts.
 import * as E from './engine.js';
 import { MAPS, SPECIALS } from './maps.js';
-import { renderStatic, renderDynamic } from './board.js';
+import { renderStatic, renderDynamic, contentBox } from './board.js';
 import { TROOPS, TEAM, cardHTML, cardBackHTML, troopArt } from './troops.js';
 import { sfx } from './sfx.js';
 
@@ -40,6 +40,7 @@ export class GameView {
     this.busy = false;
     this.root.innerHTML = this.shell();
     this.bind();
+    window.addEventListener('resize', this._resize = () => this.fitBoard());
     this.showRecapFor(this.s, true);
     this.render();
   }
@@ -116,6 +117,7 @@ export class GameView {
     this.$('.bl-dyn').innerHTML = renderDynamic(s, m, {
       flip, highlight, ghost: this.ghost, fresh: this.fresh, recent: this.recent,
     });
+    this.$('.board-wrap').style.setProperty('--board-img', `url(assets/boards/${m.id}-${flip ? 'b' : 'r'}.jpg)`);
     this.fresh = new Set();
 
     // top HUD (opponent)
@@ -186,6 +188,21 @@ export class GameView {
     const g = this.$('.game'), tray = this.$('.hand-area').offsetHeight, top = this.$('.hud-top').offsetHeight;
     g.style.setProperty('--tray-h', tray + 'px');
     g.style.setProperty('--top-h', Math.max(0, top - 22) + 'px');
+    this.fitBoard();
+  }
+
+  // Zoom the board so the playable area fills the space between the HUD and the tray.
+  fitBoard() {
+    const holder = this.$('.board-holder');
+    const cw = holder.clientWidth, ch = holder.clientHeight;
+    if (!cw || !ch) return;
+    const b = contentBox(this.m, this.viewer === 'blue');
+    let w = b.x1 - b.x0, h = b.y1 - b.y0;
+    const ca = cw / ch;
+    if (w / h > ca) h = w / ca; else w = h * ca;
+    const cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2;
+    const vb = `${(cx - w / 2).toFixed(1)} ${(cy - h / 2).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`;
+    holder.querySelectorAll('svg.board').forEach((el) => el.setAttribute('viewBox', vb));
   }
 
   canSelectCards() {
@@ -395,6 +412,7 @@ export class GameView {
     window.removeEventListener('pointermove', this._mv);
     window.removeEventListener('pointerup', this._up);
     window.removeEventListener('pointercancel', this._cancel);
+    window.removeEventListener('resize', this._resize);
     clearTimeout(this.botTimer);
   }
 

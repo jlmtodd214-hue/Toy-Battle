@@ -72,7 +72,6 @@ export function renderStatic(m, { flip = false, lite = false } = {}) {
       if (n.special && n.special !== 'restrict') out += `<g transform="translate(${x + 60 * sx} ${y + 50 * sy}) scale(${sx})">${badge(0, 0, n.special)}</g>`;
       if (n.allow) out += `<g transform="translate(${x} ${y + (n.hq ? 92 : 80) * sy}) scale(${sx})">${allowTag(0, 0, n.allow)}</g>`;
     }
-    out += `<rect width="${W}" height="${H}" fill="url(#b-vignette)" pointer-events="none"/>`;
   }
   return out + '</svg>';
 }
@@ -142,6 +141,18 @@ export function renderDynamic(s, m, opts = {}) {
     out += `<rect class="hit" data-node="${id}" x="${x - w / 2}" y="${y - up}" width="${w}" height="${up + down}" fill="transparent"/>`;
   }
   return out + '</g></svg>';
+}
+
+// Bounding box (image space) of everything that matters: bases, H.Q. and standing troops.
+export function contentBox(m, flip) {
+  const L = lay(m, flip);
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+  for (const id in L.nodes) {
+    const [x, y, sx, sy] = L.nodes[id], hq = m.nodes[id].hq, r = (hq ? 110 : 88) * sx;
+    x0 = Math.min(x0, x - r); x1 = Math.max(x1, x + r);
+    y0 = Math.min(y0, y - (hq ? 150 : 200) * sx); y1 = Math.max(y1, y + (hq ? 105 : 85) * sy);
+  }
+  return { x0, x1, y0, y1 };
 }
 
 export function renderPreview(m) { return renderStatic(m, { lite: true }); }
