@@ -215,7 +215,8 @@ code { background: #0003; padding: 1px 5px; border-radius: 5px; }
 /* --------------------------------------------------------------- living troops */
 svg .bob, .troop-art.idle { transform-box: fill-box; transform-origin: 50% 100%; animation: bob 2.4s ease-in-out infinite; }
 svg .bob.t0, .troop-art.t0.idle { animation: boing 1.6s ease-in-out infinite; }
-svg .bob.t4, .troop-art.t4.idle { animation: fly 2.8s ease-in-out infinite; }
+svg .bob.t4, .troop-art.t4.idle { animation: bob 2.4s ease-in-out infinite; }
+.part-lasso { transform-box: fill-box; transform-origin: 20% 100%; animation: tilt 1s ease-in-out infinite; }
 svg .bob.t7, .troop-art.t7.idle { animation: stomp 1.8s ease-in-out infinite; }
 svg .bob.t3, .troop-art.t3.idle { animation: stomp 2.2s ease-in-out infinite; }
 .stack:nth-child(3n) .bob { animation-delay: -.7s; }

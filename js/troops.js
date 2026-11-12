@@ -9,8 +9,8 @@ export const TROOPS = {
   0: { name: 'Bop', title: 'Jack-in-the-Box', quote: 'Surprise!', effect: 'No effect. As a joker, Bop may be placed on top of any enemy Troop, and any enemy Troop may cover it.' },
   1: { name: 'Rattles', title: 'Skeleton Warrior', quote: 'I have a bone to pick!', effect: 'You may draw 2 Troops from your reserve and place them on your rack. (Only 1 if you already have 7.)' },
   2: { name: 'Rumble', title: 'Tin Drummer', quote: 'Fall in, troops!', effect: 'You may place 1 extra Troop on the Terrain and apply its effect. (Troop effects resolve first, then special base effects.)' },
-  3: { name: 'Brutus', title: 'Armored Brawler', quote: 'Stand back. Way back.', effect: 'You may choose 1 visible enemy Troop adjacent to Brutus (one path away) and discard it face up.' },
-  4: { name: 'Zip', title: 'Paper-Plane Ace', quote: 'Over the lines we go!', effect: 'You may ignore the connection rule and place Zip on any base. (To land on the enemy H.Q., which is not a base, Zip must be connected.)' },
+  3: { name: 'Cosmo', title: 'Toy Astronaut', quote: 'One small step for toys!', effect: 'You may choose 1 visible enemy Troop adjacent to Cosmo (one path away) and discard it face up.' },
+  4: { name: 'Dusty', title: 'Toy Cowboy', quote: 'Yee-haw, over the fence!', effect: 'You may ignore the connection rule and place Dusty on any base. (To land on the enemy H.Q., which is not a base, Dusty must be connected.)' },
   5: { name: 'Volt', title: 'Combat Robot', quote: 'Target locked.', effect: 'You may take, at random, 1 Troop from your opponent\'s rack and discard it face up.' },
   6: { name: 'Cuddles', title: 'Teddy Medic', quote: 'Group hug!', effect: 'You may draw 1 Troop from your reserve and place it on your rack.' },
   7: { name: 'Treads', title: 'Wind-up Tank', quote: 'Rolling out!', effect: 'No effect.' },
@@ -88,45 +88,50 @@ const ART = {
     ${E(50, 71, 24, 6, '#efe5cf')}
     <ellipse cx="50" cy="71" rx="24" ry="6" fill="none" stroke="${c.main}" stroke-width="3"/>`,
 
-  // Heavy armored brawler with huge gauntlets.
+  // Toy astronaut with mirrored visor and ray gun.
   3: (c) => {
-    const ARM = '#a4adb7';
+    const SUIT = '#eef1f4';
     return `${shadow}
-    ${R(34, 76, 13, 16, 3, ARM, 'h')}${R(53, 76, 13, 16, 3, ARM, 'h')}
-    ${R(31, 89, 18, 7, 3, '#5d656e', 'v')}${R(51, 89, 18, 7, 3, '#5d656e', 'v')}
-    <g class="part-arm">${R(14, 44, 14, 22, 6, ARM, 'h')}${C(21, 44, 10, c.main)}${C(17, 72, 13, '#8e98a3')}
-      <path d="M8 69 h18 M8 74 h18" stroke="#5d656e" stroke-width="1.4"/></g>
-    <g class="part-arm2">${R(72, 44, 14, 22, 6, ARM, 'h')}${C(79, 44, 10, c.main)}${C(83, 72, 13, '#8e98a3')}
-      <path d="M74 69 h18 M74 74 h18" stroke="#5d656e" stroke-width="1.4"/></g>
-    ${P('M30 42 Q50 34 70 42 L66 76 Q50 82 34 76 Z', ARM, 'r')}
-    ${P('M44 44 L56 44 L54 74 L46 74 Z', c.main, 'v')}
-    ${R(32, 70, 36, 7, 2, '#6b4a2a', 'v')}${R(46, 69, 8, 9, 2, GOLD, 'v')}
-    ${[38, 62].map((x) => C(x, 50, 1.8, '#e8edf2', '')).join('')}
+    ${R(18, 40, 64, 30, 10, '#c9cfd6', 'h')}
+    ${R(36, 72, 12, 18, 5, SUIT, 'h')}${R(52, 72, 12, 18, 5, SUIT, 'h')}
+    ${R(34, 86, 16, 9, 4, c.main, 'v')}${R(50, 86, 16, 9, 4, c.main, 'v')}
+    <g class="part-arm">${R(18, 46, 12, 22, 6, SUIT, 'h')}${R(18, 56, 12, 5, 2, c.main, 'v')}${C(24, 70, 6, '#cfd5dc')}</g>
+    <g class="part-arm2">${R(70, 46, 12, 18, 6, SUIT, 'h')}${R(70, 54, 12, 5, 2, c.main, 'v')}
+      ${R(72, 62, 20, 8, 3, '#5d656e', 'h')}${R(76, 66, 5, 9, 2, '#3a3f45', 'v')}${C(93, 66, 3.5, '#9cff7a', '', 'filter="url(#f-glow)" class="part-light"')}</g>
+    ${R(30, 42, 40, 34, 9, SUIT, 'r')}
+    ${R(30, 64, 40, 7, 2, c.main, 'v')}
+    ${R(39, 47, 22, 13, 3, '#5d656e', 'v')}
+    <g filter="url(#f-glow)"><circle cx="44" cy="53.5" r="2" fill="#ff5c7a" class="part-light"/><circle cx="50" cy="53.5" r="2" fill="#ffd34d" class="part-light2"/><circle cx="56" cy="53.5" r="2" fill="#4ade80" class="part-light"/></g>
     <g class="part-head">
-      ${P('M36 34 V18 Q36 6 50 6 Q64 6 64 18 V34 Q50 38 36 34 Z', '#b3bcc6', 'h')}
-      ${R(39, 18, 22, 4, 2, '#151515', '')}${R(48, 18, 4, 14, 2, '#151515', '')}
-      ${[44, 56].map((x) => C(x, 28, 1.2, '#d9dee4', '')).join('')}
-      ${P('M47 7 Q50 -10 60 -6 Q54 -2 53 7 Z', c.main, 'v')}
+      ${C(50, 26, 17, SUIT)}
+      ${E(50, 27, 12, 10, '#c7951f', 'r')}
+      <path d="M41 23 Q46 19 53 20" stroke="#fff4c4" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".85"/>
+      ${R(32, 22, 4, 10, 2, c.main, 'h')}${R(64, 22, 4, 10, 2, c.main, 'h')}
+      <path d="M62 12 L67 2" stroke="#8e98a3" stroke-width="1.6"/><circle cx="67" cy="2" r="2" fill="${c.light}"/>
     </g>`;
   },
-  4: (c) => `<g class="part-fly">
-    <ellipse cx="54" cy="94" rx="30" ry="4" fill="#000" opacity=".22" filter="url(#f-blur2)"/>
-    ${P('M6 58 L96 30 L52 61 Z', '#fbfaf5', 'v')}
+  // Toy cowboy with a spinning lasso.
+  4: (c) => {
+    const DENIM = '#3d5a8a', LEATHER = '#7a4a26', HAT = '#c9a26a';
+    return `${shadow}
+    ${R(38, 70, 10, 20, 4, DENIM, 'h')}${R(52, 70, 10, 20, 4, DENIM, 'h')}
+    ${P('M34 96 L36 86 H48 L49 96 Z M51 96 L52 86 H64 L66 96 Z', LEATHER, 'v')}
+    <g class="part-arm">${R(24, 46, 10, 22, 5, c.main, 'h')}${C(29, 70, 4.2, SKIN)}</g>
+    ${R(34, 44, 32, 30, 7, c.main, 'v')}
+    ${P('M34 46 L44 46 L44 70 L34 70 Z M56 46 L66 46 L66 70 L56 70 Z', LEATHER, 'v')}
+    ${R(34, 68, 32, 5, 2, '#4a2d16', 'v')}${R(46, 67.5, 8, 6, 2, GOLD, 'v')}
+    <g class="part-arm2">${R(66, 34, 10, 20, 5, c.main, 'h', 'transform="rotate(-25 71 44)"')}${C(78, 30, 4.2, SKIN)}
+      <g class="part-lasso"><path d="M78 30 Q84 18 82 10" fill="none" stroke="#c49a5a" stroke-width="2"/>
+      <ellipse cx="80" cy="6" rx="16" ry="5" fill="none" stroke="#a9803f" stroke-width="3.4"/><ellipse cx="80" cy="6" rx="16" ry="5" fill="none" stroke="#e0bd7c" stroke-width="1.4" stroke-dasharray="4 3"/></g></g>
     <g class="part-head">
-      ${C(46, 45, 9, SKIN)}
-      ${P('M36.5 45 Q36 33 46 32 Q56 33 55.5 45 L53 45 Q52 39 46 39 Q40 39 39 45 Z', '#7a4a24', 'v')}
-      ${E(38.5, 47, 2.6, 4.5, '#6a3f1e', '')}${E(53.5, 47, 2.6, 4.5, '#6a3f1e', '')}
-      ${C(42, 38.5, 3.2, '#9ad6ee')}${C(50, 38.5, 3.2, '#9ad6ee')}
-      <circle cx="42" cy="38.5" r="3.2" fill="none" stroke="${GOLD}" stroke-width="1.2"/><circle cx="50" cy="38.5" r="3.2" fill="none" stroke="${GOLD}" stroke-width="1.2"/>
-      ${eyes(43, 49, 45.5, 1.7)}
-      <path d="M43.5 50 Q46 51.6 48.5 50" fill="none" stroke="#9c2a2a" stroke-width="1" stroke-linecap="round"/>
-      <g class="part-scarf">${P('M38 53 Q26 50 14 56 Q24 57 30 60 Q34 57 40 57 Z', c.main, 'v')}</g>
-    </g>
-    ${P('M6 58 L52 61 L44 77 Z', '#cdc8bb', 'v')}
-    ${P('M52 61 L96 30 L44 77 Z', '#e4dfd2', 'v')}
-    <path d="M96 30 L48 68" stroke="#bdb7a8" stroke-width=".8"/>
-  </g>`,
-
+      ${P('M40 44 L50 50 L60 44 L57 41 H43 Z', c.light, 'v')}
+      ${C(50, 32, 10.5, SKIN)}${eyes(46, 54, 31.5, 1.9)}${cheeks(43, 57, 36)}
+      <path d="M46.5 37 Q50 39.5 53.5 37" fill="none" stroke="#7a3a2a" stroke-width="1.2" stroke-linecap="round"/>
+      ${E(50, 22, 22, 5, HAT)}
+      ${P('M40 22 Q40 8 50 8 Q60 8 60 22 Q50 25 40 22 Z', HAT, 'h')}
+      ${R(40, 18, 20, 3.5, 1.5, '#5a3a1e', '')}
+    </g>`;
+  },
   // Sleek combat robot with an arm blaster.
   5: (c) => {
     const WH = '#e7ebf0';
@@ -209,7 +214,7 @@ const ICON = {
   1: '<rect x="3" y="6" width="9" height="13" rx="2" fill="#fff" stroke="#1d1d1d" stroke-width="1.5"/><rect x="7" y="4" width="9" height="13" rx="2" fill="#fff" stroke="#1d1d1d" stroke-width="1.5"/><text x="18.5" y="22" font-size="9" font-weight="900" text-anchor="middle" fill="#1d1d1d">+2</text>',
   2: '<rect x="4" y="9" width="9" height="12" rx="2" fill="#fff" stroke="#1d1d1d" stroke-width="1.5"/><path d="M17 3v10M12 8h10" stroke="#1d1d1d" stroke-width="2.5" stroke-linecap="round"/>',
   3: '<rect x="4" y="5" width="13" height="15" rx="2" fill="#fff" stroke="#1d1d1d" stroke-width="1.5"/><path d="M7 9l7 7M14 9l-7 7" stroke="#e5484d" stroke-width="2.5" stroke-linecap="round"/><circle cx="20" cy="12.5" r="2" fill="#1d1d1d"/>',
-  4: '<path d="M2 13L22 5l-9 15-3-6z" fill="#fff" stroke="#1d1d1d" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 14L22 5" stroke="#1d1d1d" stroke-width="1.2"/>',
+  4: '<ellipse cx="13" cy="7" rx="8" ry="3.5" fill="none" stroke="#a9803f" stroke-width="2.2"/><path d="M6 21 Q4 13 9 9" fill="none" stroke="#a9803f" stroke-width="2"/><path d="M14 13l6 5-6 3z" fill="#1d1d1d"/>',
   5: '<rect x="3" y="5" width="11" height="15" rx="2" fill="#fff" stroke="#1d1d1d" stroke-width="1.5"/><path d="M5.5 9l6 7M11.5 9l-6 7" stroke="#e5484d" stroke-width="2.2" stroke-linecap="round"/><path d="M19 2l-4 8h4l-3 8" fill="none" stroke="#f2b705" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>',
   6: '<rect x="5" y="5" width="11" height="15" rx="2" fill="#fff" stroke="#1d1d1d" stroke-width="1.5"/><text x="19" y="22" font-size="9" font-weight="900" text-anchor="middle" fill="#1d1d1d">+1</text>',
   7: '<path d="M6 20V9l6-5 6 5v11z" fill="#9aa3ad" stroke="#1d1d1d" stroke-width="1.5"/>',
