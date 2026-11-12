@@ -72,6 +72,17 @@ The 8 maps are Backyard Fort, Candy Clouds, Lava Sandbox, Haunted Attic, Bathtub
 - Turns are asynchronous. Play your turn and it is sent when you tap **Deploy**, or when your effects finish resolving. Your opponent sees a recap of your move ("placed Treads (7) on top of your Cosmo…") with the changed spots highlighted.
 - Games update live while the app is open. There are no push notifications, so check the **Your games** list, where your-turn games are highlighted.
 
+## Publishing as a home-screen app (GitHub Pages)
+
+The repo includes `.github/workflows/pages.yml`, which publishes the game on every push.
+
+1. Free GitHub accounts can only publish Pages from public repos: **Settings → General → Danger Zone → Change visibility → Public** (or use GitHub Pro).
+2. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. **Actions → Deploy to GitHub Pages → Run workflow** (or push any change).
+4. Open `https://jlmtodd214-hue.github.io/Toy-Battle/` on your phone, then **Share → Add to Home Screen** (iPhone) or **⋮ → Install app** (Android).
+
+Bot and pass & play work right away. Online play still needs the Firebase config in `js/config.js`.
+
 ## Running locally
 
 No build step. Serve the folder with any static server:
