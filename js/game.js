@@ -1,7 +1,7 @@
 // The in-game screen: board, HUD, hand (drag or tap to deploy), effect prompts.
 import * as E from './engine.js';
 import { MAPS, SPECIALS } from './maps.js';
-import { renderBoard } from './board.js';
+import { renderStatic, renderDynamic } from './board.js';
 import { TROOPS, TEAM, cardHTML, cardBackHTML, troopArt } from './troops.js';
 import { sfx } from './sfx.js';
 
@@ -51,7 +51,7 @@ export class GameView {
     return `
     <div class="game">
       <header class="hud hud-top"></header>
-      <div class="board-wrap"><div class="board-holder"></div><div class="toast-layer"></div></div>
+      <div class="board-wrap"><div class="board-holder"><div class="bl-static"></div><div class="bl-dyn"></div></div><div class="toast-layer"></div></div>
       <div class="prompt"></div>
       <footer class="hand-area">
         <div class="hud-me"></div>
@@ -109,7 +109,9 @@ export class GameView {
     const s = this.s, m = this.m, me = this.viewer, op = E.other(me);
     const flip = me === 'blue';
     const highlight = this.highlights();
-    this.$('.board-holder').innerHTML = renderBoard(s, m, {
+    const key = m.id + flip;
+    if (this.staticKey !== key) { this.$('.bl-static').innerHTML = renderStatic(m, { flip }); this.staticKey = key; }
+    this.$('.bl-dyn').innerHTML = renderDynamic(s, m, {
       flip, highlight, ghost: this.ghost, fresh: this.fresh, recent: this.recent,
     });
     this.fresh = new Set();

@@ -1,0 +1,14 @@
+<!doctype html><html><head><link rel="stylesheet" href="../../css/style.css"></head>
+<body style="background:#222;margin:0"><div id="o" style="display:flex;flex-wrap:wrap"></div>
+<script type="module">
+import { MAP_LIST } from '../../js/maps.js';
+import { renderStatic, renderDynamic } from '../../js/board.js';
+import * as E from '../../js/engine.js';
+import { botAction } from '../../js/bot.js';
+const o = document.getElementById('o');
+for (const m of MAP_LIST) {
+  let s = E.newGame({ mapId: m.id, seed: 5 });
+  for (let i=0;i<12 && s.phase!=='over';i++) s = E.apply(s, botAction(s));
+  o.insertAdjacentHTML('beforeend', `<div style="width:400px;height:640px;position:relative;margin:2px"><div style="position:absolute;inset:0">${renderStatic(m)}</div><div style="position:absolute;inset:0">${renderDynamic(s,m,{})}</div></div>`);
+}
+</script></body></html>

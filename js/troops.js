@@ -1,3 +1,4 @@
+import { shade, C, E, R, P, box, bead } from './paint.js';
 // Original toy characters. All art is inline SVG (viewBox 0 0 100 100), tinted by team.
 export const TEAM = {
   red: { main: '#e5484d', dark: '#9b1c22', light: '#ffb3b5', name: 'Red' },
@@ -15,147 +16,159 @@ export const TROOPS = {
   7: { name: 'Titan', title: 'Toy Mech', quote: 'Stomp mode: ON.', effect: 'No effect.' },
 };
 
-const eyes = (x1, x2, y, r = 6) => `
-  <g class="eyes">
-    <circle cx="${x1}" cy="${y}" r="${r}" fill="#fff" stroke="#1d1d1d" stroke-width="2"/>
-    <circle cx="${x2}" cy="${y}" r="${r}" fill="#fff" stroke="#1d1d1d" stroke-width="2"/>
-    <circle cx="${x1 + 1}" cy="${y + 1}" r="${r * 0.45}" fill="#1d1d1d"/>
-    <circle cx="${x2 + 1}" cy="${y + 1}" r="${r * 0.45}" fill="#1d1d1d"/>
-    <circle cx="${x1 + 2}" cy="${y - 1}" r="${r * 0.18}" fill="#fff"/>
-    <circle cx="${x2 + 2}" cy="${y - 1}" r="${r * 0.18}" fill="#fff"/>
-  </g>`;
-
-const OL = 'stroke="#1d1d1d" stroke-width="2.5" stroke-linejoin="round"';
+const SKIN = '#f0c39b', STEEL = '#b9c2cb', GOLD = '#e0a82e', WOOD = '#b98348', INK = '#1b1b1b';
+const shadow = `<ellipse cx="50" cy="96" rx="33" ry="4.5" fill="#000" opacity=".32" filter="url(#f-blur2)"/>`;
+const eyes = (x1, x2, y, r) => `<g class="eyes">${bead(x1, y, r)}${bead(x2, y, r)}</g>`;
+const cheeks = (x1, x2, y) => `<circle cx="${x1}" cy="${y}" r="3" fill="#ff7b7b" opacity=".45" filter="url(#f-blur2)"/><circle cx="${x2}" cy="${y}" r="3" fill="#ff7b7b" opacity=".45" filter="url(#f-blur2)"/>`;
+const stud = (cx, cy, c) => `${R(cx - 3.6, cy - 1.5, 7.2, 3.2, 0, shade(c, -0.1), 'h')}${E(cx, cy - 1.5, 3.6, 1.6, shade(c, 0.35), '')}`;
 
 const ART = {
-  0: (c) => `
+  // Jack-in-the-box: lacquered wood box, steel spring, painted wooden head.
+  0: (c) => `${shadow}
+    ${R(80, 71, 9, 3, 1.5, STEEL, 'v')}${C(92, 72, 4.2, '#8b2b20')}
+    ${box(22, 62, 52, 32, 8, c.main)}
+    <rect x="26" y="66" width="44" height="24" rx="2" fill="none" stroke="${shade(c.main, -0.35)}" stroke-width="1.2" opacity=".8"/>
+    ${P('M48 70 l3 6.2 6.8 .8 -5 4.6 1.4 6.7 -6.2 -3.5 -6.2 3.5 1.4 -6.7 -5 -4.6 6.8 -.8z', GOLD, 'r')}
     <g class="part-spring">
-      <path d="M50 66 l-12 -5 l24 -5 l-24 -5 l24 -5 l-12 -4" fill="none" stroke="#9aa3ad" stroke-width="5" stroke-linecap="round"/>
+      ${[0, 1, 2, 3, 4, 5].map((i) => `<ellipse cx="50" cy="${60 - i * 4}" rx="9" ry="2.4" fill="none" stroke="#6f7881" stroke-width="2.8"/><ellipse cx="50" cy="${59.4 - i * 4}" rx="9" ry="2.2" fill="none" stroke="#e8edf2" stroke-width="1" stroke-dasharray="6 22"/>`).join('')}
       <g class="part-head">
-        <path d="M30 22 Q50 -4 70 22 Z" fill="${c.main}" ${OL}/>
-        <circle cx="50" cy="5" r="5" fill="#ffd34d" ${OL}/>
-        <circle cx="50" cy="30" r="16" fill="#ffe08a" ${OL}/>
-        ${eyes(43, 57, 27, 5)}
-        <path d="M41 35 Q50 44 59 35" fill="#c0392b" ${OL}/>
-        <circle cx="37" cy="33" r="3" fill="#ff9aa2" opacity=".8"/><circle cx="63" cy="33" r="3" fill="#ff9aa2" opacity=".8"/>
+        ${C(50, 28, 15, SKIN)}
+        ${eyes(44.5, 55.5, 27, 2.6)}${cheeks(39, 61, 32)}
+        <path d="M44 33 Q50 38 56 33" fill="none" stroke="#9c2a2a" stroke-width="1.6" stroke-linecap="round"/>
+        ${P('M34.5 22 Q36 6 50 5 Q64 6 65.5 22 Z', c.main, 'v')}
+        ${R(33.5, 19.5, 33, 5.5, 2.7, shade(c.main, -0.25), 'v')}
+        <g filter="url(#f-fur)">${C(50, 5, 5, '#f5f1e8')}</g>
       </g>
-    </g>
-    <rect x="22" y="64" width="56" height="32" rx="5" fill="${c.main}" ${OL}/>
-    <rect x="22" y="64" width="56" height="8" rx="3" fill="${c.dark}" ${OL}/>
-    <path d="M50 75 l3.5 7 7.5 1 -5.5 5 1.5 7.5 -7 -4 -7 4 1.5 -7.5 -5.5 -5 7.5 -1z" fill="#ffd34d" ${OL}/>
-    <circle cx="80" cy="80" r="4" fill="#ffd34d" ${OL}/>`,
-
-  1: (c) => `
-    <g class="part-key"><path d="M78 56 h12 M90 50 v12 M84 46 a6 6 0 1 1 0.1 0 M84 66 a6 6 0 1 1 0.1 0" fill="#ffd34d" ${OL}/></g>
-    <path d="M18 78 Q4 70 10 58" fill="none" stroke="#f4a3b4" stroke-width="4" stroke-linecap="round"/>
-    <ellipse cx="50" cy="70" rx="30" ry="20" fill="#b9c0c9" ${OL}/>
-    <g class="part-head">
-      <circle cx="30" cy="30" r="13" fill="#b9c0c9" ${OL}/><circle cx="30" cy="30" r="7" fill="#f4a3b4"/>
-      <circle cx="70" cy="30" r="13" fill="#b9c0c9" ${OL}/><circle cx="70" cy="30" r="7" fill="#f4a3b4"/>
-      <ellipse cx="50" cy="45" rx="22" ry="19" fill="#c8ced6" ${OL}/>
-      ${eyes(42, 58, 42, 5.5)}
-      <circle cx="50" cy="55" r="4" fill="#f06292" ${OL}/>
-      <path d="M38 55 h-10 M38 58 l-9 3 M62 55 h10 M62 58 l9 3" stroke="#1d1d1d" stroke-width="1.5"/>
-    </g>
-    <path d="M30 62 Q50 72 70 62 L68 70 Q50 78 32 70 Z" fill="${c.main}" ${OL}/>
-    <ellipse cx="34" cy="88" rx="9" ry="5" fill="#f4a3b4" ${OL}/><ellipse cx="66" cy="88" rx="9" ry="5" fill="#f4a3b4" ${OL}/>`,
-
-  2: (c) => `
-    <g class="part-arm"><path d="M20 58 L8 40" stroke="#c8873a" stroke-width="4" stroke-linecap="round"/><circle cx="8" cy="40" r="4" fill="#fff" ${OL}/></g>
-    <g class="part-arm2"><path d="M80 58 L92 40" stroke="#c8873a" stroke-width="4" stroke-linecap="round"/><circle cx="92" cy="40" r="4" fill="#fff" ${OL}/></g>
-    <rect x="30" y="44" width="40" height="30" rx="6" fill="${c.main}" ${OL}/>
-    <path d="M36 46 L64 72 M64 46 L36 72" stroke="#ffd34d" stroke-width="3"/>
-    <g class="part-head">
-      <rect x="34" y="2" width="32" height="24" rx="4" fill="${c.dark}" ${OL}/>
-      <rect x="32" y="22" width="36" height="5" rx="2" fill="#1d1d1d"/>
-      <circle cx="50" cy="12" r="5" fill="#ffd34d" ${OL}/>
-      <path d="M50 2 Q56 -6 50 -10" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-      <circle cx="50" cy="36" r="11" fill="#ffd7b5" ${OL}/>
-      ${eyes(45, 55, 35, 3.6)}
-      <circle cx="41" cy="40" r="2.5" fill="#ff8a80"/><circle cx="59" cy="40" r="2.5" fill="#ff8a80"/>
-    </g>
-    <ellipse cx="50" cy="80" rx="26" ry="9" fill="#fff" ${OL}/>
-    <rect x="24" y="72" width="52" height="16" fill="#fff" stroke="none"/>
-    <path d="M24 72 v16 M76 72 v16" ${OL}/>
-    <ellipse cx="50" cy="72" rx="26" ry="8" fill="#f1e6c8" ${OL}/>
-    <path d="M26 76 L36 88 L46 76 L56 88 L66 76 L74 86" fill="none" stroke="${c.main}" stroke-width="3"/>
-    <ellipse cx="50" cy="88" rx="26" ry="7" fill="none" ${OL}/>`,
-
-  3: (c) => `
-    <g class="part-arm"><rect x="4" y="44" width="20" height="20" rx="3" fill="#ffd34d" ${OL}/></g>
-    <g class="part-arm2"><rect x="76" y="44" width="20" height="20" rx="3" fill="#4caf50" ${OL}/></g>
-    <rect x="24" y="40" width="52" height="36" rx="4" fill="${c.main}" ${OL}/>
-    <circle cx="37" cy="40" r="5" fill="${c.main}" ${OL}/><circle cx="63" cy="40" r="5" fill="${c.main}" ${OL}/>
-    <rect x="26" y="76" width="20" height="18" rx="3" fill="#8e5bd8" ${OL}/>
-    <rect x="54" y="76" width="20" height="18" rx="3" fill="#ff9800" ${OL}/>
-    <g class="part-head">
-      <rect x="30" y="8" width="40" height="32" rx="4" fill="#ffd34d" ${OL}/>
-      <circle cx="42" cy="8" r="4.5" fill="#ffd34d" ${OL}/><circle cx="58" cy="8" r="4.5" fill="#ffd34d" ${OL}/>
-      ${eyes(42, 58, 22, 5)}
-      <path d="M38 14 l8 3 M62 14 l-8 3" stroke="#1d1d1d" stroke-width="3" stroke-linecap="round"/>
-      <rect x="41" y="30" width="18" height="5" rx="2" fill="#1d1d1d"/>
     </g>`,
 
-  4: (c) => `
-    <g class="part-fly">
-      <path d="M6 58 L94 30 L52 62 Z" fill="#fff" ${OL}/>
-      <path d="M6 58 L94 30 L44 76 Z" fill="#e8edf3" ${OL}/>
-      <path d="M44 76 L52 62" ${OL}/>
-      <path d="M94 30 L36 64" stroke="#c9d3dd" stroke-width="2"/>
-      <g class="part-head">
-        <circle cx="46" cy="44" r="12" fill="#ffd7b5" ${OL}/>
-        <path d="M34 42 Q46 24 58 42 Z" fill="${c.main}" ${OL}/>
-        <rect x="36" y="38" width="20" height="8" rx="4" fill="#8fd3ff" ${OL}/>
-        <circle cx="41" cy="42" r="2" fill="#fff"/><circle cx="51" cy="42" r="2" fill="#fff"/>
-        <path d="M41 50 Q46 54 51 50" fill="none" stroke="#1d1d1d" stroke-width="2" stroke-linecap="round"/>
-        <path d="M34 44 Q20 40 14 46" fill="none" stroke="${c.light}" stroke-width="4" stroke-linecap="round" class="part-scarf"/>
-      </g>
-      <path d="M6 58 Q-2 62 4 70" fill="none" stroke="#9aa3ad" stroke-width="2" stroke-dasharray="3 3"/>
+  // Tin wind-up mouse.
+  1: (c) => `${shadow}
+    <path d="M22 80 Q6 78 8 64 Q9 56 15 58" fill="none" stroke="#6b5a55" stroke-width="2" stroke-linecap="round"/>
+    ${C(35, 91, 5, '#262626')}${C(65, 91, 5, '#262626')}
+    <g class="part-key">${R(78, 72, 9, 4, 1, GOLD, 'v')}${E(91, 66, 4.2, 6.5, GOLD)}${E(91, 80, 4.2, 6.5, GOLD)}${C(88, 74, 2.6, shade(GOLD, -0.2))}</g>
+    ${E(50, 74, 30, 18, '#a7b0ba')}
+    ${P('M21 70 Q50 63 79 70 L79 78 Q50 71 21 78 Z', c.main, 'v')}
+    <path d="M24 82 Q50 88 76 82" fill="none" stroke="#7d8791" stroke-width="1"/>
+    ${[30, 40, 50, 60, 70].map((x) => `<circle cx="${x}" cy="${x === 50 ? 64 : 65}" r="1" fill="#e6ebf0"/>`).join('')}
+    <g class="part-head">
+      ${C(30, 33, 12, '#a7b0ba')}${C(30, 33, 7, '#f0a7b8', 's')}
+      ${C(70, 33, 12, '#a7b0ba')}${C(70, 33, 7, '#f0a7b8', 's')}
+      ${E(50, 49, 20, 17, '#b5bec7')}
+      ${E(50, 57, 9, 7, '#c8d0d7')}
+      ${C(50, 55, 3.3, '#d94f7f')}
+      ${eyes(42.5, 57.5, 46, 3.2)}
+      <path d="M41 57 h-12 M41 59.5 l-11 3 M59 57 h12 M59 59.5 l11 3" stroke="#3b3b3b" stroke-width=".7"/>
     </g>`,
 
-  5: (c) => `
-    <g class="part-spark"><path d="M8 20 l6 6 M4 34 h8 M92 20 l-6 6 M96 34 h-8" stroke="#ffd34d" stroke-width="3" stroke-linecap="round"/></g>
-    <path d="M20 90 V46 a30 30 0 0 1 60 0 V90 H62 V46 a12 12 0 0 0 -24 0 V90 Z" fill="${c.main}" ${OL}/>
-    <rect x="20" y="76" width="18" height="16" fill="#dfe6ee" ${OL}/>
-    <rect x="62" y="76" width="18" height="16" fill="#dfe6ee" ${OL}/>
+  // Tin drummer soldier.
+  2: (c) => `${shadow}
+    <g class="part-arm"><path d="M25 62 L9 43" stroke="${WOOD}" stroke-width="3" stroke-linecap="round"/>${C(9, 43, 3, shade(WOOD, 0.2))}${C(25, 62, 4.2, SKIN)}</g>
+    <g class="part-arm2"><path d="M75 62 L91 43" stroke="${WOOD}" stroke-width="3" stroke-linecap="round"/>${C(91, 43, 3, shade(WOOD, 0.2))}${C(75, 62, 4.2, SKIN)}</g>
+    ${R(33, 46, 34, 30, 6, c.main)}
+    <path d="M35 47 L65 74 M65 47 L35 74" stroke="#f3efe6" stroke-width="3.2"/>
+    ${[52, 60, 68].map((y) => C(50, y, 1.6, GOLD)).join('')}
+    ${R(36, 44, 28, 4, 2, GOLD, 'v')}
     <g class="part-head">
-      ${eyes(40, 60, 26, 5.5)}
-      <path d="M42 36 Q50 42 58 36" fill="none" stroke="#1d1d1d" stroke-width="2.5" stroke-linecap="round"/>
+      ${C(50, 36, 10, SKIN)}${eyes(46, 54, 35.5, 1.8)}${cheeks(43, 57, 39)}
+      <path d="M47 40.5 Q50 42.5 53 40.5" fill="none" stroke="#9c2a2a" stroke-width="1.1" stroke-linecap="round"/>
+      ${R(38.5, 7, 23, 21, 3, '#202020', 'h')}${R(37.5, 24, 25, 4, 2, '#111', 'v')}
+      ${P('M50 12 l5 2.5 v5 l-5 3 -5 -3 v-5z', GOLD, 'r')}
+      ${E(50, 5, 4, 6.5, c.main)}
+      <path d="M41 28 Q50 46 59 28" fill="none" stroke="${GOLD}" stroke-width="1"/>
     </g>
-    <path d="M28 40 Q30 28 40 22" fill="none" stroke="#fff" stroke-width="3" opacity=".6" stroke-linecap="round"/>`,
+    ${R(26, 71, 48, 18, 0, '#f3efe6', 'h')}
+    <path d="M27 73 L35 87 L43 73 L51 87 L59 73 L67 87 L73 76" fill="none" stroke="${GOLD}" stroke-width="1.4"/>
+    ${E(50, 89, 24, 5.5, shade(c.main, -0.15), 'h')}
+    ${E(50, 71, 24, 6, '#efe5cf')}
+    <ellipse cx="50" cy="71" rx="24" ry="6" fill="none" stroke="${c.main}" stroke-width="3"/>`,
 
-  6: (c) => `
-    <g class="part-arm"><ellipse cx="18" cy="62" rx="9" ry="13" fill="#c98b52" ${OL}/></g>
-    <g class="part-arm2"><ellipse cx="82" cy="62" rx="9" ry="13" fill="#c98b52" ${OL}/></g>
-    <ellipse cx="50" cy="70" rx="27" ry="24" fill="#c98b52" ${OL}/>
-    <ellipse cx="50" cy="74" rx="16" ry="14" fill="#f0cfa2"/>
-    <path d="M50 70 c-6 -8 -16 0 0 10 c16 -10 6 -18 0 -10" fill="#ff5c7a" ${OL}/>
+  // Interlocking-brick golem.
+  3: (c) => `${shadow}
+    ${box(28, 79, 18, 15, 4, '#6e48b8')}${box(52, 79, 18, 15, 4, '#f08a00')}
+    <g class="part-arm">${box(6, 49, 16, 16, 4, '#f2c11a')}${stud(12, 47, '#f2c11a')}${stud(18, 47, '#f2c11a')}</g>
+    ${box(24, 46, 48, 33, 6, c.main)}
+    ${[34, 46, 58, 70].map((x) => stud(x - 2, 42, c.main)).join('')}
+    <g class="part-arm2">${box(78, 49, 16, 16, 4, '#3d9a45')}${stud(84, 47, '#3d9a45')}${stud(90, 47, '#3d9a45')}</g>
     <g class="part-head">
-      <circle cx="28" cy="16" r="9" fill="#c98b52" ${OL}/><circle cx="28" cy="16" r="4.5" fill="#f0cfa2"/>
-      <circle cx="72" cy="16" r="9" fill="#c98b52" ${OL}/><circle cx="72" cy="16" r="4.5" fill="#f0cfa2"/>
-      <circle cx="50" cy="32" r="22" fill="#d39a62" ${OL}/>
-      ${eyes(41, 59, 28, 4.5)}
-      <ellipse cx="50" cy="40" rx="9" ry="7" fill="#f0cfa2" ${OL}/>
-      <ellipse cx="50" cy="37" rx="3.5" ry="2.5" fill="#1d1d1d"/>
-      <rect x="64" y="34" width="10" height="4" fill="#fff" stroke="#ddd" transform="rotate(30 69 36)"/>
+      ${box(32, 14, 32, 26, 6, '#f2c11a')}${stud(41, 10, '#f2c11a')}${stud(56, 10, '#f2c11a')}
+      ${eyes(42, 54, 25, 3)}
+      <path d="M37.5 19 l8 3 M58.5 19 l-8 3" stroke="#2a2a2a" stroke-width="2.2" stroke-linecap="round"/>
+      ${R(41, 31, 14, 3.5, 1.7, '#3a2a12', '')}
+    </g>`,
+
+  // Folded paper plane with a peg-doll pilot.
+  4: (c) => `<g class="part-fly">
+    <ellipse cx="54" cy="94" rx="30" ry="4" fill="#000" opacity=".22" filter="url(#f-blur2)"/>
+    ${P('M6 58 L96 30 L52 61 Z', '#fbfaf5', 'v')}
+    <g class="part-head">
+      ${C(46, 45, 9, SKIN)}
+      ${P('M36.5 45 Q36 33 46 32 Q56 33 55.5 45 L53 45 Q52 39 46 39 Q40 39 39 45 Z', '#7a4a24', 'v')}
+      ${E(38.5, 47, 2.6, 4.5, '#6a3f1e', '')}${E(53.5, 47, 2.6, 4.5, '#6a3f1e', '')}
+      ${C(42, 38.5, 3.2, '#9ad6ee')}${C(50, 38.5, 3.2, '#9ad6ee')}
+      <circle cx="42" cy="38.5" r="3.2" fill="none" stroke="${GOLD}" stroke-width="1.2"/><circle cx="50" cy="38.5" r="3.2" fill="none" stroke="${GOLD}" stroke-width="1.2"/>
+      ${eyes(43, 49, 45.5, 1.7)}
+      <path d="M43.5 50 Q46 51.6 48.5 50" fill="none" stroke="#9c2a2a" stroke-width="1" stroke-linecap="round"/>
+      <g class="part-scarf">${P('M38 53 Q26 50 14 56 Q24 57 30 60 Q34 57 40 57 Z', c.main, 'v')}</g>
     </g>
-    <path d="M38 52 L50 57 L38 62 Z M62 52 L50 57 L62 62 Z" fill="${c.main}" ${OL}/>
-    <circle cx="50" cy="57" r="3" fill="${c.dark}"/>`,
+    ${P('M6 58 L52 61 L44 77 Z', '#cdc8bb', 'v')}
+    ${P('M52 61 L96 30 L44 77 Z', '#e4dfd2', 'v')}
+    <path d="M96 30 L48 68" stroke="#bdb7a8" stroke-width=".8"/>
+  </g>`,
 
-  7: (c) => `
-    <g class="part-arm"><rect x="4" y="42" width="16" height="34" rx="6" fill="${c.main}" ${OL}/><rect x="2" y="74" width="20" height="10" rx="3" fill="#7d8792" ${OL}/></g>
-    <g class="part-arm2"><rect x="80" y="42" width="16" height="34" rx="6" fill="${c.main}" ${OL}/><rect x="78" y="74" width="20" height="10" rx="3" fill="#7d8792" ${OL}/></g>
-    <rect x="18" y="38" width="64" height="40" rx="8" fill="#aab4bf" ${OL}/>
-    <rect x="30" y="48" width="40" height="20" rx="4" fill="${c.dark}" ${OL}/>
-    <circle cx="40" cy="58" r="4" fill="#ffd34d" class="part-light"/><circle cx="50" cy="58" r="4" fill="#4ade80" class="part-light2"/><circle cx="60" cy="58" r="4" fill="#ff5c7a" class="part-light"/>
-    <rect x="26" y="78" width="18" height="18" rx="3" fill="#7d8792" ${OL}/>
-    <rect x="56" y="78" width="18" height="18" rx="3" fill="#7d8792" ${OL}/>
+  // Painted horseshoe magnet.
+  5: (c) => `${shadow}
+    <g class="part-spark" filter="url(#f-glow)"><path d="M10 22 l6 6 M5 36 h8 M90 22 l-6 6 M95 36 h-8" stroke="#ffe27a" stroke-width="2" stroke-linecap="round"/></g>
+    ${P('M20 90 V46 a30 30 0 0 1 60 0 V90 H62 V46 a12 12 0 0 0 -24 0 V90 Z', c.main, 'r')}
+    ${P('M20 90 V46 a30 30 0 0 1 60 0 V90 H62 V46 a12 12 0 0 0 -24 0 V90 Z', 'transparent', 'h')}
+    ${R(20, 76, 18, 16, 1, STEEL, 'v')}${R(62, 76, 18, 16, 1, STEEL, 'v')}
+    ${P('M66 70 l6 -3.5 6 3.5 v7 l-6 3.5 -6 -3.5z', '#8f99a3', 'r')}
     <g class="part-head">
-      <path d="M50 4 V12" stroke="#1d1d1d" stroke-width="3"/><circle cx="50" cy="4" r="4" fill="#ff5c7a" ${OL} class="part-light2"/>
-      <rect x="28" y="12" width="44" height="28" rx="7" fill="${c.main}" ${OL}/>
-      <rect x="33" y="19" width="34" height="13" rx="6" fill="#1d2a3a" ${OL}/>
-      <rect x="37" y="23" width="9" height="5" rx="2" fill="#7df9ff" class="visor"/>
-      <rect x="54" y="23" width="9" height="5" rx="2" fill="#7df9ff" class="visor"/>
+      ${eyes(40, 60, 26, 3.6)}
+      <path d="M43 35 Q50 40 57 35" fill="none" stroke="#2a1010" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+    <path d="M27 40 Q29 27 40 21" fill="none" stroke="#fff" stroke-width="2.4" opacity=".5" stroke-linecap="round"/>`,
+
+  // Plush teddy medic.
+  6: (c) => {
+    const FUR = '#a8713f', LT = '#e3c49b';
+    return `${shadow}<g filter="url(#f-fur)">
+    <g class="part-arm">${E(18, 62, 9, 13, FUR)}</g>
+    <g class="part-arm2">${E(82, 62, 9, 13, FUR)}</g>
+    ${E(35, 89, 10, 7, FUR)}${E(65, 89, 10, 7, FUR)}
+    ${E(35, 90, 5.5, 4, LT, 's')}${E(65, 90, 5.5, 4, LT, 's')}
+    ${E(50, 70, 26, 23, FUR)}
+    ${E(50, 74, 15, 13, LT, 's')}
+    </g>
+    <path d="M50 62 V86" stroke="#7a4f2a" stroke-width=".9" stroke-dasharray="2 2"/>
+    ${C(50, 75, 6.5, '#f7f4ee')}<path d="M50 71 v8 M46 75 h8" stroke="${c.main}" stroke-width="3"/>
+    ${P('M33 52 Q50 60 67 52 L66 57 Q50 64 34 57 Z', c.main, 'v')}
+    <g class="part-head"><g filter="url(#f-fur)">
+      ${C(28, 16, 9, FUR)}${C(28, 16, 5, LT, 's')}${C(72, 16, 9, FUR)}${C(72, 16, 5, LT, 's')}
+      ${C(50, 32, 21, '#b17a46')}
+      ${E(50, 40, 9.5, 7.5, LT, 's')}
+    </g>
+      ${E(50, 37, 3.8, 2.7, INK)}
+      ${eyes(41, 59, 28, 3.3)}
+      <path d="M50 40 v3 M46.5 44 Q50 46 53.5 44" fill="none" stroke="#3b2414" stroke-width="1" stroke-linecap="round"/>
+      ${R(62, 31, 11, 4.5, 1.5, '#f2ece0', 'v', 'transform="rotate(28 67 33)"')}
+    </g>`;
+  },
+
+  // Painted toy mech.
+  7: (c) => `${shadow}
+    ${R(28, 78, 15, 14, 3, '#7c8691', 'h')}${R(57, 78, 15, 14, 3, '#7c8691', 'h')}
+    ${R(23, 89, 24, 7, 2, '#4a525a', 'v')}${R(53, 89, 24, 7, 2, '#4a525a', 'v')}
+    <g class="part-arm">${R(4, 44, 16, 30, 6, c.main, 'h')}${R(2, 72, 20, 12, 3, STEEL, 'v')}${C(13, 44, 8, STEEL)}</g>
+    <g class="part-arm2">${R(80, 44, 16, 30, 6, c.main, 'h')}${R(78, 72, 20, 12, 3, STEEL, 'v')}${C(87, 44, 8, STEEL)}</g>
+    ${box(20, 42, 56, 36, 5, '#98a2ac')}
+    ${R(27, 48, 42, 22, 4, c.main, 'v')}
+    ${R(32, 53, 32, 12, 3, '#1d2833', 'v')}
+    <g filter="url(#f-glow)"><circle cx="40" cy="59" r="2.6" fill="#ffd34d" class="part-light"/><circle cx="48" cy="59" r="2.6" fill="#4ade80" class="part-light2"/><circle cx="56" cy="59" r="2.6" fill="#ff5c7a" class="part-light"/></g>
+    <g class="part-head">
+      <path d="M50 3 V12" stroke="#4a525a" stroke-width="2.2"/><g class="part-light2">${C(50, 3, 3.4, '#e5484d')}</g>
+      ${box(29, 14, 36, 25, 5, c.main)}
+      ${R(33, 20, 28, 11, 5.5, '#122030', 'v')}
+      <g filter="url(#f-glow)"><rect x="37" y="23.5" width="8" height="4" rx="2" fill="#7df9ff" class="visor"/><rect x="49" y="23.5" width="8" height="4" rx="2" fill="#7df9ff" class="visor"/></g>
     </g>`,
 };
 

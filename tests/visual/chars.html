@@ -1,0 +1,8 @@
+<!doctype html><html><head><link rel="stylesheet" href="../../css/style.css"></head>
+<body style="background:#2a3266;padding:10px"><div id="o" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+<script type="module">
+import { troopArt, cardHTML } from '../../js/troops.js';
+const o = document.getElementById('o');
+for (const c of ['red','blue']) for (let t=0;t<8;t++) o.insertAdjacentHTML('beforeend', `<div style="width:150px;height:150px;background:#ddd;border-radius:10px">${troopArt(t,c)}</div>`);
+for (let t=0;t<8;t++) o.insertAdjacentHTML('beforeend', cardHTML('b'+t+'a'));
+</script></body></html>
